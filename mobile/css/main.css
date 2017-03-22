@@ -278,7 +278,7 @@ a:link
 }
 .row3
 {
-    height: 60vh;
+    min-height: 60vh;
     /*第二屏上部分样式*/
     margin: 0;
 
@@ -358,27 +358,22 @@ a:link
 
 .row4
 {
-    height: 40vh;
+    min-height: 40vh;
     /*第二屏下部分样式*/
     margin: 0;
-    position: relative;
+
     border-top: .4em solid #e44c65;
     background-color: rgba(21,27,30,.90);
     box-shadow: 0 .25vw .5vw 0 rgba(0, 0, 0, .25);
 }
 /*部门介绍样式开始*/
 .aboutWord
-{   
-    width:100%;
+{
     height: 40vh;
     padding: 0;
     padding-top: 3em;
-    min-height: 230px;
+
     text-align: center;
-    position:absolute;
-    top:0;
-    left:0;
-    display: none;
 }
 .aboutWord h2,
 .aboutWord h3,
@@ -771,7 +766,7 @@ ul.icons li a:hover .icon
         margin-left: 2rem;
     }
 }
-@media screen and (max-width: 374px)
+@media screen and (max-width: 390px)
 {
     .show img
     {
@@ -834,6 +829,10 @@ ul.icons li a:hover .icon
 
         padding-top: 0;
     }
+    #icons
+    {
+        display: none;
+    }
 }
 @media screen and (max-width: 653px)
 {
@@ -892,8 +891,8 @@ ul.icons li a:hover .icon
 }
 .workTitle
 {
-    font-size: 3rem;
-    
+    font-size: 10rem;
+
     margin-left: 35px;
 
     color: #48ecb6;
@@ -963,7 +962,7 @@ ul.icons li a:hover .icon
     position: absolute;
     top: 0;
     left: 5%;
-    min-height: 330px;
+
     width: 90%;
     height: 90%;
 }
