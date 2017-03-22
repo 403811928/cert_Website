@@ -27,6 +27,7 @@ $('#next4').click(function(){
 });
 setInterval('play()',100);//每0.1秒执行一次Play()函数检测#one的位置
 high();
+moveBar();
 $(".slideBto").click(function(){//报名按钮点击时间
     $(".slideBto").hide();//按钮隐藏
     $("#mask").fadeIn(500);//遮罩淡入
@@ -63,7 +64,7 @@ function play(){
    }
     };
 function high(){
-    var box=$(".boxT");
+    var box=$(".box .boxT");
     var about=$("#about .aboutWord");
     $(box[0]).mouseover(function(){
         $("#about1").addClass("highlight");
@@ -165,6 +166,76 @@ function high(){
         $(box[3]).css("background-image","url(images/pic13.png)");
     });
 }
+function moveBar(){
+    var j=1;
+    var timer_1=null;
+    var box2=$("#mobileBox .boxT");
+    $(box2[0]).click(function(){
+        clearInterval(timer_1);
+        $("#aboutBar").css({"left": "0"});
+        j=1;
+        timer_1=setInterval(function(){
+            if(j<4){
+                $("#aboutBar").animate({left: "-=100vw"},{duration: "1500",easing: "linear"});
+                j++;
+            }else{
+                $("#aboutBar").animate({left: 0},{duration: "1500",easing: "linear"});
+                j=1;
+            }
+        },10000);
+    });
+    $(box2[1]).click(function(){
+        clearInterval(timer_1);
+        $("#aboutBar").css({"left": "-100vw"});
+        j=2;
+        timer_1=setInterval(function(){
+            if(j<4){
+                $("#aboutBar").animate({left: "-=100vw"},{duration: "1500",easing: "linear"});
+                j++;
+            }else{
+                $("#aboutBar").animate({left: 0},{duration: "1500",easing: "linear"});
+                j=1;
+            }
+        },10000);
+    });
+    $(box2[2]).click(function(){
+        clearInterval(timer_1);
+        $("#aboutBar").css({"left": "-200vw"});
+        j=3;
+        timer_1=setInterval(function(){
+            if(j<4){
+                $("#aboutBar").animate({left: "-=100vw"},{duration: "1500",easing: "linear"});
+                j++;
+            }else{
+                $("#aboutBar").animate({left: 0},{duration: "1500",easing: "linear"});
+                j=1;
+            }
+        },10000);
+    });
+    $(box2[3]).click(function(){
+        clearInterval(timer_1);
+        $("#aboutBar").css({"left": "-300vw"});
+        j=4;
+        timer_1=setInterval(function(){
+            if(j<4){
+                $("#aboutBar").animate({left: "-=100vw"},{duration: "1500",easing: "linear"});
+                j++;
+            }else{
+                $("#aboutBar").animate({left: 0},{duration: "1500",easing: "linear"});
+                j=1;
+            }
+        },10000);
+    });
+    timer_1=setInterval(function(){
+        if(j<4){
+            $("#aboutBar").animate({left: "-=100vw"},{duration: "1500",easing: "linear"});
+            j++;
+        }else{
+            $("#aboutBar").animate({left: 0},{duration: "1500",easing: "linear"});
+            j=1;
+        }
+    },10000);
+}
 function slide(){
     $("#registerFrom").hide();
     $("#success").show();
@@ -175,3 +246,34 @@ function fail(){
     setTimeout("$('#fail').hide()",1500);
     $("#registerFrom").show();
 }
+/*window.onload=function(){
+    var j=1;
+    var timer_1=null;
+    var timer_2=null;
+    var speed;
+    var oAboutBar=document.getElementById('aboutBar');
+    timer_1=setInterval(moveBar,10000);
+    function moveBar(){
+        if(j<4){
+            speed=Math.ceil((100*j-oAboutBar.offsetLeft)/40);
+            timer_2=setInterval(function(){
+                if(100*j==oAboutBar.offsetLeft){
+                    clearInterval(timer_2);
+                    j++;
+                }else{
+                    oAboutBar.style.left=Math.ceil(oAboutBar.offsetLeft+speed)+"px";
+                }
+            },30);
+        }else{
+            speed=Math.ceil(oAboutBar.offsetLeft/40);
+            timer_2=setInterval(function(){
+                if(0==oAboutBar.offsetLeft){
+                    clearInterval(timer_2);
+                    j=1;
+                }else{
+                    oAboutBar.style.left=Math.floor(oAboutBar.offsetLeft-speed)+"px";
+                }
+            },30);
+        }
+    }
+}*/
