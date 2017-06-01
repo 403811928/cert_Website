@@ -27,7 +27,7 @@ body
     left: 50%;
     /*向下翻页箭头样式*/
 
-    display: block;
+    display: block;`
 
     width: 30px;
     min-height: 30px;
@@ -359,6 +359,7 @@ a:link
 .row4
 {
     height: 40vh;
+    min-height: 270px;
     /*第二屏下部分样式*/
     margin: 0;
     position: relative;
@@ -944,9 +945,10 @@ ul.icons li a:hover .icon
 .famousMate
 {
     float: left;
-
-    width: 100%;
     height: 60vh;
+    min-height: 340px;
+    width: 100%;
+    
 }
 .teamMumberItem
 {
