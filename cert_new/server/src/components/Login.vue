@@ -106,18 +106,17 @@ export default {
       remember:false, //记住我
       checkboxInside:'inside' , //checkbox 的内部
       token:'', //token
-      sessionID:'', //session
       validation:true, //是否验证
       focusStatus:false, //密码框是否选中,
-      loginApi:'/login',
-      get:""
+      loginApi:'http://localhost:3000/login/',
     }
   },
   methods: {
     validate (status) { //检测密码是否正确 尚未完成
       if(status == 200){ //如果状态码为200，则通过验证，跳转页面
-        this.$store.commit('isLogin',{userName:this.account,keep:30})
-        this.$router.push({name:"HelloID",params:{userID:this.account}})
+
+        this.$router.push({path:"/works"})
+
       }else if(status == 404){//如果状态码为404，密码错误，输入框变红，提示信息出现
         this.validation = false
         this.input="inputErr"
@@ -139,58 +138,19 @@ export default {
         username: account,
         password: pwd,
         token:this.token,
-        sessionID:this.sessionID,
         remember:this.remember
       }, {}).then((response) => {//成功后验证
         this.validate(response.data.status)
-        console.log(this.sessionID)
-        this.setCookie()
+         window.sessionStorage.setItem("user",this.account);
       })
     },
     select () { //设置cookie
       this.checkboxInside = (this.checkboxInside=="inside")?"checkboxInside":"inside" //改变checkboxInside 的Class
       this.remember = (this.remember)?false:true //改变remember的值
     },
-    setCookie (){ //设置cookies
-      var date = (new Date()).getTime();
-      var newDate = new Date(date + 30*24*60*60*1000) 
-      document.cookie = "session="+ this.sessionID + ";expires=" + newDate.toGMTString();
-      document.cookie = "remember="+ this.remember + ";expires=" + newDate.toGMTString();
-      if(this.remeber){
-        document.cookie = "userName="+ this.account + ";expires=" + newDate.toGMTString();
-      }else{
-        sessionStorage.setItem("user", this.account)
-      }
-    },
     register () {
       this.$router.push({path:"/Register"})
     }
-  },
-  created: function (){ //获取token等信息
-      var date = (new Date()).getTime();
-      var newDate
-      console.log(this.$store)
-      var sessionID = document.cookie.replace(/(?:(?:^|.*;\s*)session\s*\=\s*([^;]*).*$)|^.*$/, "$1")//获取cookie
-      var remember = document.cookie.replace(/(?:(?:^|.*;\s*)remember\s*\=\s*([^;]*).*$)|^.*$/, "$1")//是否记住
-      this.$http.post(this.loginApi, {
-        'date':date,
-        'sessionID': sessionID,
-        'remember': remember
-      }, {}).then((response) => {
-        console.log(response.data)
-        if(response.data.remember == 200){
-          this.$router.push({name:"Hello",params:{userID:response.data.userID}})
-        }else{
-          newDate = new Date(response.data.final)
-          this.token = response.data.token
-          this.sessionID =  response.data.sessionID
-        }
-
-      });
-  },
-  beforeRouteLeave (to, from, next) {
-      console.log(this.$store.state.count)
-      next()
   }
 }
 </script>

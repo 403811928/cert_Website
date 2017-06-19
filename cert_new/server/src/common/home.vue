@@ -58,7 +58,7 @@
   
 </style>
 <script>
-const userID = sessionStorage.getItem("user")
+const userID = window.sessionStorage.getItem("user")
 export default{
   name:'home',
   data () {
@@ -70,7 +70,8 @@ export default{
       topItem:[
         {icon:"icon-bianji",router:"/famous",name:"名人堂"},
         {icon:"icon-xinxi",router:"/works",name:"作品集"},
-        {icon:"icon-process",router:"/photo",name:"社团照"}
+        {icon:"icon-process",router:"/photo",name:"社团照"},
+        {icon:"icon-geren",router:"/fresh",name:"新生报名"}
       ],
       bottomItem:[
         {icon:"icon-orderlisto",router:"/advice",name:"建议反馈"},

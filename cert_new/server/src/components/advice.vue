@@ -37,6 +37,7 @@
 </style>
 <script>
 import home from "../common/home.vue"
+
 export default{
   name: 'advice',
   components:{home}

@@ -8,6 +8,7 @@ import Works from '@/components/Works.vue'
 import Contact from '@/components/contact.vue'
 import Advice from '@/components/advice.vue'
 import Photo from '@/components/photo.vue'
+import Fresh from "@/components/fresh.vue"
 Vue.use(Router) 
 
 export default new Router({
@@ -66,6 +67,11 @@ export default new Router({
       path:"/photo",
       name:"photo",
       component:Photo
+    },
+    {
+      path:"/fresh",
+      name:"fresh",
+      component:Fresh
     }
 
   ]
