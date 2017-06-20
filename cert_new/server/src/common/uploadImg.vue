@@ -99,7 +99,7 @@ export default{
       // 读取成功后的回调
       reader.onloadend = function () {
         self.imgSrc.push({url:this.result})
-        self.$emit('upload',self.imgSrc)
+        self.$emit('upload',self.imgSrc,img)
       }
 
     },

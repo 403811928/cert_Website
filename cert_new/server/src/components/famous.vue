@@ -18,22 +18,26 @@
   
           </div>
           <div class="layerContent">
-            <form action="" class="addInfoForm">
+            <form class="addInfoForm" enctype='multipart/form-data' action="javascript: void(0);">
               <div class="inputLine">
                 <label for="">学长姓名</label>
                 <input type="text" name="addName" placeholder="请输入学长姓名" v-model="addName">
               </div>
               <div class="inputLine">
-                <label for="">大佬图片</label>
+                <label for="">学长照片</label>
                 <uploadImg inputName="addImg" v-on:upload="setImgSrc"></uploadImg>
   
               </div>
               <div class="inputLine">
-                <label for="">大佬简介</label>
-                <textarea class="itemDescribe" name="addDescribe" placeholder="请输入对商品的描述" v-model="addDescribe"></textarea>
+                <label for="">学长简介</label>
+                <textarea class="itemInfo" name="addInfo" v-model="addInfo"></textarea>
               </div>
               <div class="inputLine">
-                <button @click="">提交</button>
+                <label for="">学长寄语</label>
+                <textarea class="itemDescribe" name="addDescribe" v-model="addDescribe"></textarea>
+              </div>
+              <div class="inputLine">
+                <button @click="upload()">提交</button>
               </div>
             </form>
           </div>
@@ -42,10 +46,10 @@
       <table class="tableBox">
         <tr class="tableLine tableHead">
           <th>序号</th>
-          <th class="itemName">大佬名字</th>
-          <th class="itemInfo">大佬简介</th>
-          <th class="itemImg">大佬照片</th>
-          <th class="itemDescribe">大佬寄语</th>
+          <th class="itemName">学长名字</th>
+          <th class="itemInfo">学长简介</th>
+          <th class="itemImg">学长照片</th>
+          <th class="itemDescribe">学长寄语</th>
           <th class="itemBtn">操作</th>
         </tr>
         <tr class="tableLine" v-if="listItem.length == 0">
@@ -56,7 +60,7 @@
           <td>{{item.name}}</td>
           <td>{{item.info}}</td>
           <td>
-            <img :src="img.src" alt="" class="showImg" v-for="img in item.Img">
+            <img :src="item.src" alt="" class="showImg" >
           </td>
           <td>
             {{item.describle}}
@@ -90,32 +94,59 @@ export default {
   components: { home, uploadImg },
   data() {
     return {
-      listItem: [{
-        name: "asdasdasdasd",
-        price: "200"
-      }],
+      listItem: [],
       pageCount: 5,
       layerShow: false,
       addDescribe: '',
       addName: '',
-      postURL: "http://localhost:3000/famous/"
+      addInfo: '',
+      postURL: "http://localhost:3000/famous/",
+      addImg: {}
     }
   },
   methods: {
-    setImgSrc(value) {
-      this.imgSrc = value
-      console.log(value)
+    setImgSrc(value,file) {
+      this.addImg = file
+      console.log(value,file)
     },
     addFamous() {
       this.layerShow = !this.layerShow
     },
     cancel() {
       this.layerShow = !this.layerShow
+    },
+    upload() {
+      const formData = new FormData()
+      formData.append('file', this.addImg)
+      formData.append('addName',this.addName)
+      formData.append("addInfo",this.addInfo)
+      formData.append("addDescribe",this.addDescribe)
+      let config={
+        header:{ 'Content-type': 'application/x-www-form-urlencoded' }
+      }
+      this.$http.post(this.postURL, formData,config ).then((res) => {
+        console.log(res.status)
+        if (res.status == 200) {
+          this.layerShow=!this.layerShow;
+          this.$router.go(0)
+        }
+      });
+    },
+    del(num){
+      console.log(num)
+      this.$http.patch(this.postURL,{"data":num}).then(res=>{
+        if(res.data.status==200){
+          this.$router.go(0)
+        }
+      })
     }
   },
   created() {
-    this.$http.get(this.postURL).then((req) => {
-      console.log(req.data);
+    this.$http.get(this.postURL).then((res) => {
+      console.log(res.data.data);
+      res.data.data.forEach((item)=>{
+        this.listItem.push(item)
+      },this)
     })
   }
 }
