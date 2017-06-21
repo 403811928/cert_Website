@@ -43,6 +43,9 @@
           </div>
         </div>
       </div>
+      <div class="toast" v-show="toastShow">
+        <p class="toastContent">{{toast}}成功</p>
+      </div>
       <table class="tableBox">
         <tr class="tableLine tableHead">
           <th>序号</th>
@@ -60,7 +63,7 @@
           <td>{{item.name}}</td>
           <td>{{item.info}}</td>
           <td>
-            <img :src="item.src" alt="" class="showImg" >
+            <img :src="item.src" alt="" class="showImg">
           </td>
           <td>
             {{item.describle}}
@@ -85,6 +88,23 @@
 @import "../assets/styles/icons/iconfont.css"
 .layerIcon:before,.layerIcon:after
   background red!important
+.toast
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-end;
+.toastContent
+  width: 100px;
+  height: 40px;
+  border-radius: 20px 20px;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  color: #fff;
+  justify-content: center;
+  align-items: center;
 </style>
 <script>
 import home from "../common/home.vue"
@@ -101,13 +121,21 @@ export default {
       addName: '',
       addInfo: '',
       postURL: "http://localhost:3000/famous/",
-      addImg: {}
+      addImg: {},
+      toast: "",
+      toastShow: false
     }
   },
   methods: {
-    setImgSrc(value,file) {
+    validate(data) {
+      if (data == 404) {
+        this.$router.push({ path: "/" })
+        window.localStorage.removeItem("token")
+      }
+    },
+    setImgSrc(value, file) {
       this.addImg = file
-      console.log(value,file)
+      console.log(value, file)
     },
     addFamous() {
       this.layerShow = !this.layerShow
@@ -118,36 +146,65 @@ export default {
     upload() {
       const formData = new FormData()
       formData.append('file', this.addImg)
-      formData.append('addName',this.addName)
-      formData.append("addInfo",this.addInfo)
-      formData.append("addDescribe",this.addDescribe)
-      let config={
-        header:{ 'Content-type': 'application/x-www-form-urlencoded' }
+      formData.append('addName', this.addName)
+      formData.append("addInfo", this.addInfo)
+      formData.append("addDescribe", this.addDescribe)
+      formData.append("token", this.$store.state.user.token)
+      let config = {
+        header: { 'Content-type': 'application/x-www-form-urlencoded' }
       }
-      this.$http.post(this.postURL, formData,config ).then((res) => {
-        console.log(res.status)
-        if (res.status == 200) {
-          this.layerShow=!this.layerShow;
-          this.$router.go(0)
-        }
-      });
+      if (this.addImg) {
+        this.$http.post(this.postURL, formData, config).then((res) => {
+          console.log(res.status)
+          if (res.status == 200) {
+            this.layerShow = !this.layerShow;
+            this.getInfo()
+            this.showToast("添加");
+          } else {
+            this.$router.push({ path: "/" })
+            window.localStorage.removeItem("token")
+          }
+        });
+      } else {
+
+      }
+
     },
-    del(num){
+    showToast(value,time=800){
+      this.toastShow = !this.toastShow;
+      this.toast = value;
+      let that = this;
+      console.log(time)
+      setTimeout(function(){that.toastShow = !that.toastShow},time);
+    },
+    getInfo() {
+      this.$http.get(this.postURL, { params: { token: this.$store.state.user.token } }).then(res => {
+        if (res.data.status == 404) {
+          this.$router.push({ path: "/" })
+          window.localStorage.removeItem("token")
+        } else if (res.data.status == 200) {
+          this.listItem = [];
+          res.data.data.forEach((item) => {
+            this.listItem.push(item)
+          }, this)
+        }
+      })
+    },
+    del(num) {
       console.log(num)
-      this.$http.patch(this.postURL,{"data":num}).then(res=>{
-        if(res.data.status==200){
-          this.$router.go(0)
+      this.$http.patch(this.postURL, { "data": num, "token": this.$store.state.user.token }).then(res => {
+        if (res.data.status == 200) {
+          this.getInfo()
+          this.showToast("删除");
+        } else if (res.data.status == 404) {
+          this.$router.push({ path: "/" })
+          window.localStorage.removeItem("token")
         }
       })
     }
   },
   created() {
-    this.$http.get(this.postURL).then((res) => {
-      console.log(res.data.data);
-      res.data.data.forEach((item)=>{
-        this.listItem.push(item)
-      },this)
-    })
+    this.getInfo()
   }
 }
 </script>

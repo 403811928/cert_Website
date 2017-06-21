@@ -1,32 +1,31 @@
 <template>
   <div class="loginBox" @keyup.enter="login">
-      <div class="loginTitle">
-        <h2>CERT</h2>
-        <h3>专注IT技术、服务交大师生</h3>
-      </div>
-      <div class="inputLine">
-        <input type="text" placeholder="请输入账号" v-model="account" ref="account">
-      </div>
-
-      <div class="inputLine">
-        <input type="password" placeholder="请输入密码" v-model="password" ref="password" :class="input" @keyup="changeErr">
-        <input type="hidden" :value="token">
-      </div>
-      <div class="checkLine" v-show="!validation">
-        <span class="inputErr" >名字或密码错误</span>
-      </div>
-      <div class="checkLine">
-        <span class="checkboxBorder" @click="select">
-          <span :class="checkboxInside">
-          </span>
-          <input type="checkbox" class="rememberMe" v-model="remember">
+    <div class="loginTitle">
+      <h2>CERT</h2>
+      <h3>专注IT技术、服务交大师生</h3>
+    </div>
+    <div class="inputLine">
+      <input type="text" placeholder="请输入账号" v-model="account" ref="account">
+    </div>
+  
+    <div class="inputLine">
+      <input type="password" placeholder="请输入密码" v-model="password" ref="password" :class="input" @keyup="changeErr">
+    </div>
+    <div class="checkLine" v-show="!validation">
+      <span class="inputErr">名字或密码错误</span>
+    </div>
+    <div class="checkLine">
+      <span class="checkboxBorder" @click="select">
+        <span :class="checkboxInside">
         </span>
-        <span class="checkboxWord">记住密码</span>
-      </div>
-      <div class="btnLine">
-        <button class="btnLogin" @click="login" >登录</button>
-        <button class="btnRegist" @click="register">注册</button>
-      </div>
+        <input type="checkbox" class="rememberMe" v-model="remember">
+      </span>
+      <span class="checkboxWord">记住密码</span>
+    </div>
+    <div class="btnLine">
+      <button class="btnLogin" @click="login">登录</button>
+      <button class="btnRegist" @click="register">注册</button>
+    </div>
   </div>
 </template>
 
@@ -95,62 +94,81 @@
 
 </style>
 <script>
-import {mapGetters,mapState} from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 export default {
   name: 'login',
-  data () {
+  data() {
     return {
       account: '', //账号
       password: '', //密码 
-      input:'',     //input 框class
-      remember:false, //记住我
-      checkboxInside:'inside' , //checkbox 的内部
-      token:'', //token
-      validation:true, //是否验证
-      focusStatus:false, //密码框是否选中,
-      loginApi:'http://localhost:3000/login/',
+      input: '',     //input 框class
+      remember: false, //记住我
+      checkboxInside: 'inside', //checkbox 的内部
+      validation: true, //是否验证
+      focusStatus: false, //密码框是否选中,
+      loginApi: 'http://localhost:3000/login/',
+      isLoginApi: "http://localhost:3000/isLogin/"
     }
   },
   methods: {
-    validate (status) { //检测密码是否正确 尚未完成
-      if(status == 200){ //如果状态码为200，则通过验证，跳转页面
+    validate(data) { //检测密码是否正确 尚未完成
+      if (data.status == 200) { //如果状态码为200，则通过验证，跳转页面
+        this.$store.commit("isLogin", { name: data.name, token: data.token });
+        if (this.remember) {
+          window.localStorage.setItem("token", data.token);
+        } else {
+          window.sessionStorage.setItem("token", data.token);
+        }
 
-        this.$router.push({path:"/works"})
-
-      }else if(status == 404){//如果状态码为404，密码错误，输入框变红，提示信息出现
+        this.$router.push({ path: "/works" })
+      } else if (data.status == 404) {//如果状态码为404，密码错误，输入框变红，提示信息出现
         this.validation = false
-        this.input="inputErr"
+        this.input = "inputErr"
         this.focusStatus = true
         this.$refs.password.focus(this.focusStatus);
       }
     },
-    changeErr () {//改变input 值
+    changeErr() {//改变input 值
       this.focusStatus = true
-      if(this.focusStatus){
+      if (this.focusStatus) {
         this.input = ""
         this.validation = true
       }
     },
-    login () { //登录
-      var pwd = this.password
-      var account = this.account
+    login() { //登录
+      let pwd = this.password
+      let account = this.account
+      let time;
+      if (this.remember) {
+        time = new Date().getTime() + 7 * 3600 * 24 * 1000
+      } else {
+        time = new Date().getTime() + 3600 * 0.5 * 1000
+      }
+
       this.$http.post(this.loginApi, { //提交密码账号
         username: account,
         password: pwd,
-        token:this.token,
-        remember:this.remember
+        remember: this.remember,
+        "time": time
       }, {}).then((response) => {//成功后验证
-        this.validate(response.data.status)
-         window.sessionStorage.setItem("user",this.account);
+        this.validate(response.data)
       })
     },
-    select () { //设置cookie
-      this.checkboxInside = (this.checkboxInside=="inside")?"checkboxInside":"inside" //改变checkboxInside 的Class
-      this.remember = (this.remember)?false:true //改变remember的值
+    select() { //设置cookie
+      this.checkboxInside = (this.checkboxInside == "inside") ? "checkboxInside" : "inside" //改变checkboxInside 的Class
+      this.remember = (this.remember) ? false : true //改变remember的值
     },
-    register () {
-      this.$router.push({path:"/Register"})
+    register() {
+      this.$router.push({ path: "/Register" })
     }
+  },
+  create() {
+    if (window.localStorage.getItem("token")) {
+      this.$http.post(this.isLoginApi, { token: window.localStorage.getItem("token") }).then((res) => {
+        this.validate(res.body)
+      })
+    }
+
   }
 }
 </script>
