@@ -114,13 +114,9 @@ export default {
     validate(data) { //检测密码是否正确 尚未完成
       if (data.status == 200) { //如果状态码为200，则通过验证，跳转页面
         this.$store.commit("isLogin", { name: data.name, token: data.token });
-        if (this.remember) {
-          window.localStorage.setItem("token", data.token);
-        } else {
-          window.sessionStorage.setItem("token", data.token);
-        }
-
-        this.$router.push({ path: "/works" })
+        window.localStorage.setItem("token", data.token);
+        window.localStorage.setItem("user", data.name);
+        this.$router.push({ path: "/famous" })
       } else if (data.status == 404) {//如果状态码为404，密码错误，输入框变红，提示信息出现
         this.validation = false
         this.input = "inputErr"
@@ -157,6 +153,7 @@ export default {
     select() { //设置cookie
       this.checkboxInside = (this.checkboxInside == "inside") ? "checkboxInside" : "inside" //改变checkboxInside 的Class
       this.remember = (this.remember) ? false : true //改变remember的值
+      console.log(this.remember)
     },
     register() {
       this.$router.push({ path: "/Register" })

@@ -76,22 +76,30 @@ export default {
       bottomItem: [
         { icon: "icon-orderlisto", router: "/advice", name: "建议反馈" },
         { icon: "icon-phone", router: "/contact", name: "联系我们" }
-      ]
+      ],
+      isLoginApi: "http://localhost:3000/isLogin/"
     }
   },
   methods: {
     logOut() {
-      sessionStorage.removeItem("user");
-      this.$router.push({ path: "/" })
-    }
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+      this.$router.push({ path: "/" });
+    },
   },
   created() {
-    let userID = this.$store.state.user.name;
-    this.navItem[0].name = userID;
-    console.log(userID)
-    if (!userID) {
+    this.navItem[0].name = window.localStorage.getItem("user");
+    if (window.localStorage.getItem("token")) {
+      this.$http.post(this.isLoginApi, { token: window.localStorage.getItem("token") }).then((res) => {
+        if (res.data.status == 404) {
+          this.$router.push({ path: "/" })
+        }
+      })
+    }else{
       this.$router.push({ path: "/" })
     }
+
+
 
   }
 }

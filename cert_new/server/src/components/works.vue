@@ -3,25 +3,12 @@
     <div class="itemList" slot="content">
       <div class="pageTitle">
         <h2>作品集</h2>
-        <button class="btnLogin" @click="addFamous">添加</button>
+        <button class="btnLogin" @click="addWorks">添加</button>
         <!--@click="addPhoto" -->
       </div>
-      <!--<form action="" class="shopInfoForm">
-                <div class="inputLine">
-                  <label for="">作品名字</label><input type="text" name="shopName" placeholder="请输入商铺名字" v-model="shopName">
-                </div>
-                <div class="inputLine">
-                  <label for="">作品图片</label>
-                  <uploadImg inputName="shopImg"  v-on:upload="setImgSrc"></uploadImg>
-                </div>
-                <div class="inputLine">
-                  <label for="">作品描述</label>
-                  <textarea class="itemDescribe" name="shopDescribe" placeholder="请输入对商铺的描述" v-model="shopDescribe"></textarea>
-                </div>
-                <div class="inputLine">
-                  <button @click="">提交</button>
-                </div>
-              </form> -->
+      <div class="toast" v-show="toastShow">
+        <p class="toastContent">{{toast}}成功</p>
+      </div>
       <div class="layer" v-show="layerShow">
         <div class="addInfo">
           <div class="layerHeader">
@@ -34,22 +21,26 @@
   
           </div>
           <div class="layerContent">
-            <form action="" class="addInfoForm">
+            <form class="addInfoForm" enctype='multipart/form-data' action="javascript: void(0);">
               <div class="inputLine">
-                <label for="">学长姓名</label>
-                <input type="text" name="addName" placeholder="请输入学长姓名" v-model="addName">
+                <label for="">作品名字</label>
+                <input type="text" name="worksName" placeholder="请输入作品名" v-model="worksName">
               </div>
               <div class="inputLine">
-                <label for="">大佬图片</label>
-                <uploadImg inputName="addImg" v-on:upload="setImgSrc"></uploadImg>
+                <label for="">作品效果图</label>
+                <uploadImg inputName="worksImg" v-on:upload="setImgSrc"></uploadImg>
   
               </div>
               <div class="inputLine">
-                <label for="">大佬简介</label>
-                <textarea class="itemDescribe" name="addDescribe" placeholder="请输入对商品的描述" v-model="addDescribe"></textarea>
+                <label for="">作品简介</label>
+                <textarea class="itemDescribe" name="worksDescribe" placeholder="请输入对作品简介" v-model="worksDescribe"></textarea>
               </div>
               <div class="inputLine">
-                <button @click="">提交</button>
+                <label for="">作品作者</label>
+                <input type="text" name="worksName" placeholder="请输入作者姓名" v-model="worksAuthor">
+              </div>
+              <div class="inputLine">
+                <button @click="upload()">提交</button>
               </div>
             </form>
           </div>
@@ -72,7 +63,7 @@
           <td>{{item.name}}</td>
           <td>{{item.info}}</td>
           <td>
-            <img :src="img.src" alt="" class="showImg" v-for="img in item.Img">
+            <img :src="item.src" class="showImg">
           </td>
           <td>
             {{item.author}}
@@ -104,27 +95,105 @@ export default {
   components: { home, uploadImg },
   data() {
     return {
-      listItem: [{
-        name: "asdasdasdasd",
-        price: "200"
-      }],
+      listItem: [],
       layerShow: false,
-      addDescribe: '',
-      addName: '',
-      pageCount: 5
+      worksDescribe: '',
+      worksName: '',
+      worksImg: {},
+      worksAuthor: '',
+      pageCount: 5,
+      toast: "",
+      toastShow: false,
+      postURL: "http://localhost:3000/works/"
     }
   },
   methods: {
-    setImgSrc(value) {
-      this.imgSrc = value
-      console.log(value)
+    countPage(length) {
+      this.pageCont = Math(length % 6);
     },
-    addFamous() {
+    validate(data) {
+      if (data == 404) {
+        this.$router.push({ path: "/" })
+        window.localStorage.removeItem("token");
+        this.showToast("token验证失败,请重新登录");
+      }
+    },
+    setImgSrc(value, file) {
+      this.worksImg = file
+      console.log(value, file)
+    },
+    addWorks() {
       this.layerShow = !this.layerShow
     },
     cancel() {
       this.layerShow = !this.layerShow
+    },
+    upload() {
+      console.log('asd')
+      const formData = new FormData()
+      formData.append('file', this.worksImg)
+      formData.append('worksName', this.worksName)
+      formData.append("worksInfo", this.worksInfo)
+      formData.append("worksDescribe", this.worksDescribe)
+      formData.append("worksAuthor", this.worksAuthor)
+      formData.append("token", window.localStorage.getItem("token"))
+      let config = {
+        header: { 'Content-type': 'application/x-www-form-urlencoded' }
+      }
+      if (this.worksImg) {
+        this.$http.post(this.postURL, formData, config).then((res) => {
+          console.log(res.status)
+          if (res.status == 200) {
+            this.layerShow = !this.layerShow;
+            this.getInfo()
+            this.showToast("添加");
+          } else {
+            this.$router.push({ path: "/" })
+            window.localStorage.removeItem("token")
+          }
+        });
+      } else {
+
+      }
+
+    },
+    showToast(value, time = 800) {
+      this.toastShow = !this.toastShow;
+      this.toast = value;
+      let that = this;
+      console.log(time)
+      setTimeout(function () { that.toastShow = !that.toastShow }, time);
+    },
+    getInfo() {
+      this.$http.get(this.postURL, { params: { token: window.localStorage.getItem("token") } }).then(res => {
+        if (res.data.status == 404) {
+          this.$router.push({ path: "/" })
+          window.localStorage.removeItem("token")
+        } else if (res.data.status == 200) {
+
+          this.listItem = [];
+          res.data.data.forEach((item) => {
+            this.listItem.push(item)
+          }, this)
+          console.log(this.listItem)
+        }
+      })
+    },
+    del(num) {
+      console.log(num)
+      this.$http.patch(this.postURL, { "data": num, "token": window.localStorage.getItem("token") }).then(res => {
+        if (res.data.status == 200) {
+          this.getInfo()
+          this.showToast("删除");
+        } else if (res.data.status == 404) {
+          this.$router.push({ path: "/" })
+          window.localStorage.removeItem("token")
+        }
+      })
     }
+  },
+  created() {
+    this.getInfo()
   }
 }
 </script>

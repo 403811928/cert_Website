@@ -88,23 +88,6 @@
 @import "../assets/styles/icons/iconfont.css"
 .layerIcon:before,.layerIcon:after
   background red!important
-.toast
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: flex-end;
-.toastContent
-  width: 100px;
-  height: 40px;
-  border-radius: 20px 20px;
-  background: rgba(0,0,0,0.8);
-  display: flex;
-  color: #fff;
-  justify-content: center;
-  align-items: center;
 </style>
 <script>
 import home from "../common/home.vue"
@@ -130,7 +113,8 @@ export default {
     validate(data) {
       if (data == 404) {
         this.$router.push({ path: "/" })
-        window.localStorage.removeItem("token")
+        window.localStorage.removeItem("token");
+        this.showToast("token验证失败,请重新登录");
       }
     },
     setImgSrc(value, file) {
@@ -149,7 +133,7 @@ export default {
       formData.append('addName', this.addName)
       formData.append("addInfo", this.addInfo)
       formData.append("addDescribe", this.addDescribe)
-      formData.append("token", this.$store.state.user.token)
+      formData.append("token", window.localStorage.getItem("token"))
       let config = {
         header: { 'Content-type': 'application/x-www-form-urlencoded' }
       }
@@ -170,15 +154,15 @@ export default {
       }
 
     },
-    showToast(value,time=800){
+    showToast(value, time = 800) {
       this.toastShow = !this.toastShow;
       this.toast = value;
       let that = this;
       console.log(time)
-      setTimeout(function(){that.toastShow = !that.toastShow},time);
+      setTimeout(function () { that.toastShow = !that.toastShow }, time);
     },
     getInfo() {
-      this.$http.get(this.postURL, { params: { token: this.$store.state.user.token } }).then(res => {
+      this.$http.get(this.postURL, { params: { token: window.localStorage.getItem("token") } }).then(res => {
         if (res.data.status == 404) {
           this.$router.push({ path: "/" })
           window.localStorage.removeItem("token")
@@ -192,7 +176,7 @@ export default {
     },
     del(num) {
       console.log(num)
-      this.$http.patch(this.postURL, { "data": num, "token": this.$store.state.user.token }).then(res => {
+      this.$http.patch(this.postURL, { "data": num, "token": window.localStorage.getItem("token") }).then(res => {
         if (res.data.status == 200) {
           this.getInfo()
           this.showToast("删除");

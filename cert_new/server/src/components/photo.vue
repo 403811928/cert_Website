@@ -3,8 +3,11 @@
     <div slot="content" class="itemList">
       <div class="pageTitle">
         <h2>社团照</h2>
-        <button class="btnLogin" @click="addFamous()">添加</button>
+        <button class="btnLogin" @click="addPhoto()">添加</button>
         <!--@click="addPhoto" -->
+      </div>
+      <div class="toast" v-show="toastShow">
+        <p class="toastContent">{{toast}}成功</p>
       </div>
       <div class="layer" v-show="layerShow">
         <div class="addInfo">
@@ -18,22 +21,21 @@
   
           </div>
           <div class="layerContent">
-            <form action="" class="addInfoForm">
+            <form class="addInfoForm" enctype='multipart/form-data' action="javascript: void(0);">
               <div class="inputLine">
-                <label for="">学长姓名</label>
-                <input type="text" name="addName" placeholder="请输入学长姓名" v-model="addName">
+                <label for="">选择照片</label>
+                <uploadImg inputName="photoImg" v-on:upload="setImgSrc"></uploadImg>
               </div>
               <div class="inputLine">
-                <label for="">大佬图片</label>
-                <uploadImg inputName="addImg" v-on:upload="setImgSrc"></uploadImg>
-  
+                <label for="">照片描述</label>
+                <input type="text" name="photoDescribe" placeholder="请输入此照片的描述" v-model="photoDescribe">
               </div>
               <div class="inputLine">
-                <label for="">大佬简介</label>
-                <textarea class="itemDescribe" name="addDescribe" placeholder="请输入对商品的描述" v-model="addDescribe"></textarea>
+                <label for="">拍摄时间</label>
+                <input type="text" name="photoDate" placeholder="请输入此照片的拍摄日期" v-model="photoDate">
               </div>
               <div class="inputLine">
-                <button @click="">提交</button>
+                <button @click="upload()">提交</button>
               </div>
             </form>
           </div>
@@ -53,7 +55,7 @@
         <tr class="tableLine tableMain" v-for="(item,index) in listItem">
           <td>{{ index+1 }}</td>
           <td>
-            <img :src="img.src" alt="" class="showImg" v-for="img in item.Img">
+            <img :src="item.src" alt="" class="showImg">
           </td>
           <td>
             {{item.describle}}
@@ -88,14 +90,15 @@ export default {
   name: "itemList",
   data() {
     return {
-      listItem: [{
-        name: "asdasdasdasd",
-        price: "200"
-      }],
+      listItem: [],
       pageCount: 5,
-      addDescribe: '',
+      photoDescribe: '',
       layerShow: false,
-      addName: '',
+      photoDate: "",
+      photoImg: {},
+      toast: "",
+      toastShow: false,
+      postURL: "http://localhost:3000/photo/"
     }
   },
   components: { home, uploadImg },
@@ -106,22 +109,90 @@ export default {
   //     })
   // },
   methods: {
+    validate(data) {
+      if (data == 404) {
+        this.$router.push({ path: "/" })
+        window.localStorage.removeItem("token");
+        this.showToast("token验证失败,请重新登录");
+      }
+    },
     fix(num) {
 
     },
-    del(num) {
+    upload() {
+      console.log('asd')
+      const formData = new FormData()
+      formData.append('file', this.photoImg)
+      formData.append("photoDescribe", this.photoDescribe)
+      formData.append("photoDate", this.photoDate)
+      formData.append("token", window.localStorage.getItem("token"))
+      let config = {
+        header: { 'Content-type': 'application/x-www-form-urlencoded' }
+      }
+      if (this.photoImg) {
+        this.$http.post(this.postURL, formData, config).then((res) => {
+          console.log(res.status)
+          if (res.status == 200) {
+            this.layerShow = !this.layerShow;
+            this.getInfo()
+            this.showToast("添加");
+          } else {
+            this.$router.push({ path: "/" })
+            window.localStorage.removeItem("token")
+          }
+        });
+      } else {
+
+      }
 
     },
-    setImgSrc(value) {
-      this.imgSrc = value
-      console.log(value)
+    showToast(value, time = 800) {
+      this.toastShow = !this.toastShow;
+      this.toast = value;
+      let that = this;
+      console.log(time)
+      setTimeout(function () { that.toastShow = !that.toastShow }, time);
     },
-    addFamous() {
+    getInfo() {
+      this.$http.get(this.postURL, { params: { token: window.localStorage.getItem("token") } }).then(res => {
+        if (res.data.status == 404) {
+          this.$router.push({ path: "/" })
+          window.localStorage.removeItem("token")
+        } else if (res.data.status == 200) {
+
+          this.listItem = [];
+          res.data.data.forEach((item) => {
+            this.listItem.push(item)
+          }, this)
+          console.log(this.listItem)
+        }
+      })
+    },
+    del(num) {
+      console.log(num)
+      this.$http.patch(this.postURL, { "data": num, "token": window.localStorage.getItem("token") }).then(res => {
+        if (res.data.status == 200) {
+          this.getInfo()
+          this.showToast("删除");
+        } else if (res.data.status == 404) {
+          this.$router.push({ path: "/" })
+          window.localStorage.removeItem("token")
+        }
+      })
+    },
+    setImgSrc(value, file) {
+      this.photoImg = file
+      console.log(value, file)
+    },
+    addPhoto() {
       this.layerShow = !this.layerShow
     },
     cancel() {
       this.layerShow = !this.layerShow
     }
+  },
+  created() {
+    this.getInfo()
   }
 }
 </script>
