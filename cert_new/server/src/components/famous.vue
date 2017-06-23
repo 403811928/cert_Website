@@ -58,7 +58,7 @@
         <tr class="tableLine" v-if="listItem.length == 0">
           <td colspan="6">无信息</td>
         </tr>
-        <tr class="tableLine tableMain" v-for="(item,index) in listItem">
+        <tr class="tableLine tableMain" v-for="(item,index) in pageItem">
           <td>{{ index+1 }}</td>
           <td>{{item.name}}</td>
           <td>{{item.info}}</td>
@@ -74,7 +74,7 @@
           </td>
         </tr>
       </table>
-      <div class="pageBox">
+      <div class="pageBox" v-if="pageCount >= 2">
         <button class="btnPage btnLast">上一页</button>
         <div class="btnGroup">
           <button class="btnPage" v-for="(page,index) in pageCount" @click="page(index)">{{index+1}}</button>
@@ -99,6 +99,8 @@ export default {
     return {
       listItem: [],
       pageCount: 5,
+      pageItem:[],
+      pageIndex:"",
       layerShow: false,
       addDescribe: '',
       addName: '',
@@ -110,25 +112,34 @@ export default {
     }
   },
   methods: {
-    validate(data) {
+    pageCount(){ //分页功能
+      this.pageCount = Math.ceil(this.listItem.length /5);
+    },
+    pageLast(index){ //上一页
+
+    },
+    pageNext(index){//下一页
+
+    },
+    validate(data) { //验证登录
       if (data == 404) {
         this.$router.push({ path: "/" })
         window.localStorage.removeItem("token");
         this.showToast("token验证失败,请重新登录");
       }
     },
-    setImgSrc(value, file) {
+    setImgSrc(value, file) { //通过setImgSrc 获取上传的图片的file对象
       this.addImg = file
-      console.log(value, file)
+
     },
-    addFamous() {
+    addFamous() { //改变layerShow 的布尔值来实现弹出框的出现和消失
       this.layerShow = !this.layerShow
     },
     cancel() {
       this.layerShow = !this.layerShow
     },
     upload() {
-      const formData = new FormData()
+      const formData = new FormData() //新建一个formData类型 因为需要添加文件，所以选用formData
       formData.append('file', this.addImg)
       formData.append('addName', this.addName)
       formData.append("addInfo", this.addInfo)
@@ -139,11 +150,11 @@ export default {
       }
       if (this.addImg) {
         this.$http.post(this.postURL, formData, config).then((res) => {
-          console.log(res.status)
+ 
           if (res.status == 200) {
             this.layerShow = !this.layerShow;
-            this.getInfo()
-            this.showToast("添加");
+            this.getInfo()//获取信息
+            this.showToast("添加"); //给吐司条传递信息
           } else {
             this.$router.push({ path: "/" })
             window.localStorage.removeItem("token")
@@ -154,14 +165,14 @@ export default {
       }
 
     },
-    showToast(value, time = 800) {
+    showToast(value, time = 800) {//吐司条 
       this.toastShow = !this.toastShow;
       this.toast = value;
       let that = this;
-      console.log(time)
+
       setTimeout(function () { that.toastShow = !that.toastShow }, time);
     },
-    getInfo() {
+    getInfo() {//通过GET方法来获得数据，每次都清空listItem 并更新listItem 数据驱动组件更新
       this.$http.get(this.postURL, { params: { token: window.localStorage.getItem("token") } }).then(res => {
         if (res.data.status == 404) {
           this.$router.push({ path: "/" })
@@ -175,7 +186,7 @@ export default {
       })
     },
     del(num) {
-      console.log(num)
+
       this.$http.patch(this.postURL, { "data": num, "token": window.localStorage.getItem("token") }).then(res => {
         if (res.data.status == 200) {
           this.getInfo()

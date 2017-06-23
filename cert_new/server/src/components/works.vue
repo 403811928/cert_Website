@@ -120,7 +120,7 @@ export default {
     },
     setImgSrc(value, file) {
       this.worksImg = file
-      console.log(value, file)
+
     },
     addWorks() {
       this.layerShow = !this.layerShow
@@ -129,7 +129,7 @@ export default {
       this.layerShow = !this.layerShow
     },
     upload() {
-      console.log('asd')
+
       const formData = new FormData()
       formData.append('file', this.worksImg)
       formData.append('worksName', this.worksName)
@@ -142,7 +142,7 @@ export default {
       }
       if (this.worksImg) {
         this.$http.post(this.postURL, formData, config).then((res) => {
-          console.log(res.status)
+
           if (res.status == 200) {
             this.layerShow = !this.layerShow;
             this.getInfo()
@@ -161,7 +161,7 @@ export default {
       this.toastShow = !this.toastShow;
       this.toast = value;
       let that = this;
-      console.log(time)
+
       setTimeout(function () { that.toastShow = !that.toastShow }, time);
     },
     getInfo() {
@@ -175,12 +175,12 @@ export default {
           res.data.data.forEach((item) => {
             this.listItem.push(item)
           }, this)
-          console.log(this.listItem)
+
         }
       })
     },
     del(num) {
-      console.log(num)
+
       this.$http.patch(this.postURL, { "data": num, "token": window.localStorage.getItem("token") }).then(res => {
         if (res.data.status == 200) {
           this.getInfo()

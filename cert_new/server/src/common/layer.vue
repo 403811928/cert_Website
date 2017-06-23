@@ -52,7 +52,6 @@ export default {
   methods: {
     setImgSrc(value) {
       this.imgSrc = value
-      console.log(value)
     },
     addFamous() {
       this.layerShow = !this.layerShow

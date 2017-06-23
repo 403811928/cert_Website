@@ -13,7 +13,6 @@ export default new Vuex.Store({ //新建store
 	mutations: {
 		isLogin (state,user) {
 			state.user = user
-			console.log(state,user)
 		},
 		COUNT(state){
 			state.count++

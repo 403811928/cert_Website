@@ -2,49 +2,19 @@
   <home>
     <div slot="content" class="itemList">
       <div class="pageTitle">
-        <h2>社团照</h2>
-        <button class="btnLogin" @click="addFamous()">添加</button>
+        <h2>新生报名</h2>
         <!--@click="addPhoto" -->
       </div>
-      <div class="layer" v-show="layerShow">
-        <div class="addInfo">
-          <div class="layerHeader">
-            <div class="layerTitle">
-              添加信息
-              <div class="cancel">
-                <div class="icon layerIcon" @click="cancel()"></div>
-              </div>
-            </div>
-  
-          </div>
-          <div class="layerContent">
-            <form action="" class="addInfoForm">
-              <div class="inputLine">
-                <label for="">学长姓名</label>
-                <input type="text" name="addName" placeholder="请输入学长姓名" v-model="addName">
-              </div>
-              <div class="inputLine">
-                <label for="">大佬图片</label>
-                <uploadImg inputName="addImg" v-on:upload="setImgSrc"></uploadImg>
-  
-              </div>
-              <div class="inputLine">
-                <label for="">大佬简介</label>
-                <textarea class="itemDescribe" name="addDescribe" placeholder="请输入对商品的描述" v-model="addDescribe"></textarea>
-              </div>
-              <div class="inputLine">
-                <button @click="">提交</button>
-              </div>
-            </form>
-          </div>
-        </div>
+      <div class="toast" v-show="toastShow">
+        <p class="toastContent">{{toast}}成功</p>
       </div>
       <table class="tableBox">
         <tr class="tableLine tableHead">
           <th>序号</th>
-          <th class="itemImg">照片</th>
-          <th class="itemDescribe">照片描述</th>
-          <th class="itemDate">拍摄时间</th>
+          <th class="itemImg">姓名</th>
+          <th class="itemDescribe">QQ</th>
+          <th class="itemDate">电话</th>
+          <th class="itemDate">专业信息</th>
           <th class="itemBtn">操作</th>
         </tr>
         <tr class="tableLine" v-if="listItem.length == 0">
@@ -53,13 +23,16 @@
         <tr class="tableLine tableMain" v-for="(item,index) in listItem">
           <td>{{ index+1 }}</td>
           <td>
-            <img :src="img.src" alt="" class="showImg" v-for="img in item.Img">
+            {{item.name}}
           </td>
           <td>
-            {{item.describle}}
+            {{item.QQ}}
           </td>
           <td>
-            {{item.date}}
+            {{item.phone}}
+          </td>
+          <td>
+            {{item.describe}}
           </td>
           <td class="itemImg">
             <button class="btnFix" @click="fix(item.num)">修改</button>
@@ -88,40 +61,59 @@ export default {
   name: "itemList",
   data() {
     return {
-      listItem: [{
-        name: "asdasdasdasd",
-        price: "200"
-      }],
+      listItem: [],
       pageCount: 5,
-      addDescribe: '',
-      layerShow: false,
-      addName: '',
+      toast: "",
+      toastShow: false,
+      postURL: "http://localhost:3000/fresh/",
+
     }
   },
   components: { home, uploadImg },
-  // created () {
-  //    this.$http.post(this.loginApi, { //提交密码账号
-  //     }, {}).then((response) => {//成功后验证
-  //         this.listItem = response.listItem
-  //     })
-  // },
   methods: {
     fix(num) {
 
     },
+    validate(data) {
+      if (data == 404) {
+        this.$router.push({ path: "/" })
+        window.localStorage.removeItem("token");
+        this.showToast("token验证失败,请重新登录");
+      }
+    },
     del(num) {
-
+      this.$http.patch(this.postURL, { "data": num, "token": window.localStorage.getItem("token") }).then(res => {
+        if (res.data.status == 200) {
+          this.getInfo()
+          this.showToast("删除");
+        } else if (res.data.status == 404) {
+          this.$router.push({ path: "/" })
+          window.localStorage.removeItem("token")
+        }
+      })
     },
-    setImgSrc(value) {
-      this.imgSrc = value
-      console.log(value)
+    showToast(value, time = 800) {
+      this.toastShow = !this.toastShow;
+      this.toast = value;
+      let that = this;
+      setTimeout(function () { that.toastShow = !that.toastShow }, time);
     },
-    addFamous() {
-      this.layerShow = !this.layerShow
-    },
-    cancel() {
-      this.layerShow = !this.layerShow
+    getInfo() {
+      this.$http.get(this.postURL, { params: { token: window.localStorage.getItem("token") } }).then(res => {
+        if (res.data.status == 404) {
+          this.$router.push({ path: "/" })
+          window.localStorage.removeItem("token")
+        } else if (res.data.status == 200) {
+          this.listItem = [];
+          res.data.data.forEach((item) => {
+            this.listItem.push(item)
+          }, this)
+        }
+      })
     }
+  },
+  created() {
+    this.getInfo()
   }
 }
 </script>

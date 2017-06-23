@@ -92,7 +92,7 @@ export default {
         registerCode:this.registerCode,
         token:this.token
       },{}).then((response)=>{
-        console.log(response.data)
+
         this.validate(response.data.status)
       })
     }

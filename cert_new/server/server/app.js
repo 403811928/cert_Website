@@ -31,7 +31,6 @@ function token(payload) {
 function checkToken(token) {
   let decode = jwt.decode(token, secret);
   let now = moment().valueOf()
-  console.log(now, decode.time)
   if (now <= decode.time) {
     return true
   } else {
@@ -59,9 +58,9 @@ app.post("/isLogin", function (req, res) {
   }
 })
 //登录操作
-console.log(moment().format())
+
 app.post('/login', function (req, res) {
-  console.log(req.body);
+
   let userName = req.body.username;
   let getPwd = req.body.password;
   let realPwd;
@@ -105,7 +104,7 @@ app.post('/famous', (req, res) => {
   //   });
   //上传完成后处理
   form.parse(req, function (err, fields, files) {
-    console.log(fields)
+
     var filesTmp = JSON.stringify(files, null, 2);
     if (err) {
       console.log('parse error: ' + err);
@@ -195,7 +194,7 @@ app.patch("/famous", (req, res) => {
     let deleteID = req.body.data;
     let connection = mysql.createConnection(mysqlConfig);
     //查询
-    console.log(req.body)
+
     connection.connect();
     connection.query('DELETE FROM `famous` WHERE `famous`.`famous_id` = \'' + deleteID + '\'', function (err, rows, fields) {
       if (err) throw err;
@@ -218,7 +217,7 @@ app.patch("/famous", (req, res) => {
 app.post('/photo', (req, res) => {
   var form = new multiparty.Form();
   form.parse(req, function (err, fields, files) {
-    console.log(fields)
+
     var filesTmp = JSON.stringify(files, null, 2);
     if (err) {
       console.log('parse error: ' + err);
@@ -302,7 +301,6 @@ app.patch("/photo", (req, res) => {
     let deleteID = req.body.data;
     let connection = mysql.createConnection(mysqlConfig);
     //查询
-    console.log(req.body)
     connection.connect();
     connection.query('DELETE FROM `photo` WHERE `photo`.`photo_id` = \'' + deleteID + '\'', function (err, rows, fields) {
       if (err) throw err;
@@ -323,7 +321,6 @@ app.patch("/photo", (req, res) => {
 app.post('/works', (req, res) => {
   var form = new multiparty.Form();
   form.parse(req, function (err, fields, files) {
-    console.log(fields)
     var filesTmp = JSON.stringify(files, null, 2);
     if (err) {
       console.log('parse error: ' + err);
@@ -353,7 +350,7 @@ app.post('/works', (req, res) => {
         let syx = 'INSERT INTO `works` (`works_id`, `works_item`) VALUES (NULL,' + data + ')';
         connection.query(syx, function (err, rows, fields) {
           if (err) throw err;
-          console.log('查询结果为: ', fields);
+
 
         }); //异步，要使用Promise
         connection.end();
@@ -410,11 +407,11 @@ app.patch("/works", (req, res) => {
     let deleteID = req.body.data;
     let connection = mysql.createConnection(mysqlConfig);
     //查询
-    console.log(req.body)
+
     connection.connect();
     connection.query('DELETE FROM `works` WHERE `works`.`works_id` = \'' + deleteID + '\'', function (err, rows, fields) {
       if (err) throw err;
-      console.log("删除成功")
+
       res.json({
         status: 200
       })
@@ -434,6 +431,76 @@ app.get('/img/:filename', function (req, res) {
   });
 });
 
+app.post("/fresh", (req, res) => {
+  let name = req.body.name
+  let qq = req.body.qq
+  let phone = req.body.phone
+  let describle = req.body.describle
+  let connection = mysql.createConnection(mysqlConfig);
+  connection.connect();
+  let data = '\'{"name":\"' + name + '\","qq":\"' + qq + '\","phone":\"' + phone + '\","describe":\"' + describe + '\"}\'';
+  let syx = 'INSERT INTO `fresh` (`fresh_id`, `fresh_item`) VALUES (NULL,' + data + ')';
+  connection.query(syx, function (err, rows, fields) {
+    if (err) throw err;
+    console.log('查询结果为: ', fields);
+    res.json({
+      status: 200
+    })
+  }); //异步，要使用Promise
+  connection.end();
+
+})
+app.get("/fresh", (req, res) => {
+  if (checkToken(req.query.token)) {
+    let connection = mysql.createConnection(mysqlConfig);
+    //查询
+    connection.connect();
+    connection.query('SELECT * FROM `fresh`', function (err, rows, fields) {
+      if (err) throw err;
+      console.log('查询结果为: ', rows);
+      let freshMessage = [];
+      rows.forEach(function (element) {
+        element.fresh_item = JSON.parse(element.fresh_item)
+
+        element.fresh_item.num = element.fresh_id
+
+        freshMessage.push(element.fresh_item)
+      }, this);
+      res.json({
+        data: freshMessage,
+        status: 200
+      })
+    }); //异步，要使用Promise
+    connection.end();
+  } else {
+    res.json({
+      status: 404,
+      message: "token验证失败"
+    })
+  }
+});
+app.patch("/fresh", (req, res) => {
+  if (checkToken(req.body.token)) {
+    let deleteID = req.body.data;
+    let connection = mysql.createConnection(mysqlConfig);
+    //查询
+
+    connection.connect();
+    connection.query('DELETE FROM `fresh` WHERE `fresh`.`fresh_id` = \'' + deleteID + '\'', function (err, rows, fields) {
+      if (err) throw err;
+
+      res.json({
+        status: 200
+      })
+    });
+    connection.end();
+  } else {
+    res.json({
+      status: 404,
+      message: "token验证失败"
+    })
+  }
+})
 var server = app.listen(3000, function () {
   var host = server.address().address;
   var port = server.address().port;

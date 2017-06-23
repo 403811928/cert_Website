@@ -120,7 +120,7 @@ export default {
 
     },
     upload() {
-      console.log('asd')
+
       const formData = new FormData()
       formData.append('file', this.photoImg)
       formData.append("photoDescribe", this.photoDescribe)
@@ -131,7 +131,7 @@ export default {
       }
       if (this.photoImg) {
         this.$http.post(this.postURL, formData, config).then((res) => {
-          console.log(res.status)
+
           if (res.status == 200) {
             this.layerShow = !this.layerShow;
             this.getInfo()
@@ -150,7 +150,7 @@ export default {
       this.toastShow = !this.toastShow;
       this.toast = value;
       let that = this;
-      console.log(time)
+
       setTimeout(function () { that.toastShow = !that.toastShow }, time);
     },
     getInfo() {
@@ -164,12 +164,12 @@ export default {
           res.data.data.forEach((item) => {
             this.listItem.push(item)
           }, this)
-          console.log(this.listItem)
+
         }
       })
     },
     del(num) {
-      console.log(num)
+
       this.$http.patch(this.postURL, { "data": num, "token": window.localStorage.getItem("token") }).then(res => {
         if (res.data.status == 200) {
           this.getInfo()
@@ -182,7 +182,7 @@ export default {
     },
     setImgSrc(value, file) {
       this.photoImg = file
-      console.log(value, file)
+
     },
     addPhoto() {
       this.layerShow = !this.layerShow

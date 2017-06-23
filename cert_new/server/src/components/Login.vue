@@ -114,8 +114,8 @@ export default {
     validate(data) { //检测密码是否正确 尚未完成
       if (data.status == 200) { //如果状态码为200，则通过验证，跳转页面
         this.$store.commit("isLogin", { name: data.name, token: data.token });
-        window.localStorage.setItem("token", data.token);
-        window.localStorage.setItem("user", data.name);
+        window.localStorage.setItem("token", data.token); //设置localStroage token
+        window.localStorage.setItem("user", data.name); //设置localStroage user
         this.$router.push({ path: "/famous" })
       } else if (data.status == 404) {//如果状态码为404，密码错误，输入框变红，提示信息出现
         this.validation = false
@@ -136,9 +136,9 @@ export default {
       let account = this.account
       let time;
       if (this.remember) {
-        time = new Date().getTime() + 7 * 3600 * 24 * 1000
+        time = new Date().getTime() + 7 * 3600 * 24 * 1000 //记住我 设置token 有效时限 为 30天
       } else {
-        time = new Date().getTime() + 3600 * 0.5 * 1000
+        time = new Date().getTime() + 3600 * 0.5 * 1000 // token有效时间为 30分钟
       }
 
       this.$http.post(this.loginApi, { //提交密码账号
@@ -153,14 +153,13 @@ export default {
     select() { //设置cookie
       this.checkboxInside = (this.checkboxInside == "inside") ? "checkboxInside" : "inside" //改变checkboxInside 的Class
       this.remember = (this.remember) ? false : true //改变remember的值
-      console.log(this.remember)
     },
     register() {
       this.$router.push({ path: "/Register" })
     }
   },
   create() {
-    if (window.localStorage.getItem("token")) {
+    if (window.localStorage.getItem("token")) { //create的时候判断token是否有效
       this.$http.post(this.isLoginApi, { token: window.localStorage.getItem("token") }).then((res) => {
         this.validate(res.body)
       })

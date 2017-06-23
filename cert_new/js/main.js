@@ -54,8 +54,6 @@ function mumberItem() {
 					}, 'easein'); //设置left值
 				}
 
-				console.log(newLeft);
-
 			}
 
 			m++; //滚动次数

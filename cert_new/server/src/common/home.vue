@@ -64,8 +64,7 @@ export default {
   data() {
     return {
       navItem: [
-        { icon: "icon-geren", router: "sss", name: "" },
-        { icon: "icon-xinxi", router: "/works", name: "个人信息" },
+        { icon: "icon-geren", router: "", name: "" },
       ],
       topItem: [
         { icon: "icon-bianji", router: "/famous", name: "名人堂" },
@@ -75,7 +74,6 @@ export default {
       ],
       bottomItem: [
         { icon: "icon-orderlisto", router: "/advice", name: "建议反馈" },
-        { icon: "icon-phone", router: "/contact", name: "联系我们" }
       ],
       isLoginApi: "http://localhost:3000/isLogin/"
     }
@@ -88,8 +86,8 @@ export default {
     },
   },
   created() {
-    this.navItem[0].name = window.localStorage.getItem("user");
-    if (window.localStorage.getItem("token")) {
+    this.navItem[0].name = window.localStorage.getItem("user"); //通过判断localStroage 是否存在token 来判断登录状态
+    if (window.localStorage.getItem("token")) { //如果存在token 则判断token是否过期
       this.$http.post(this.isLoginApi, { token: window.localStorage.getItem("token") }).then((res) => {
         if (res.data.status == 404) {
           this.$router.push({ path: "/" })
