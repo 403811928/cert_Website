@@ -1,12 +1,36 @@
 module.exports = {
+  get: (req, res) => {
+    if (checkToken(req.query.token)) {
+      let connection = mysql.createConnection(mysqlConfig);
+      //查询
+      connection.connect();
+      connection.query('SELECT * FROM `works`', function (err, rows, fields) {
+        if (err) throw err;
+        console.log('查询结果为: ', rows);
+        let worksMessage = [];
+        rows.forEach(function (element) {
+          element.works_item = JSON.parse(element.works_item)
+
+          element.works_item.num = element.works_id
+
+          worksMessage.push(element.works_item)
+        }, this);
+        res.json({
+          data: worksMessage,
+          status: 200
+        })
+      }); //异步，要使用Promise
+      connection.end();
+    } else {
+      res.json({
+        status: 404,
+        message: "token验证失败"
+      })
+    }
+  },
   post: (req, res) => {
     var form = new multiparty.Form();
-    //   form.parse(req, function (err, fields, files) {
-    //      console.log(JSON.stringify(files, null, 2));
-    //   });
-    //上传完成后处理
     form.parse(req, function (err, fields, files) {
-
       var filesTmp = JSON.stringify(files, null, 2);
       if (err) {
         console.log('parse error: ' + err);
@@ -16,10 +40,11 @@ module.exports = {
           var inputFile = files.file[0];
           var uploadedPath = inputFile.path;
           var dstPath = './files/' + inputFile.originalFilename;
-          let addName = fields.addName[0];
-          let addInfo = fields.addInfo[0];
-          let addDescribe = fields.addDescribe[0];
-          let addSrc = "http://localhost:3000/img/" + inputFile.originalFilename;
+          let worksName = fields.worksName[0];
+          let worksInfo = fields.worksInfo[0];
+          let worksAuthor = fields.worksAuthor[0];
+          let worksDescribe = fields.worksDescribe[0];
+          let worksSrc = "http://localhost:3000/img/" + inputFile.originalFilename;
 
           // 重命名为真实文件名
           mv(uploadedPath, dstPath, function (err) {
@@ -31,11 +56,11 @@ module.exports = {
           let connection = mysql.createConnection(mysqlConfig);
           //查询
           connection.connect();
-          let data = '\'{"name":\"' + addName + '\","info":\"' + addInfo + '\","src":\"' + addSrc + '\","describle":\"' + addDescribe + '\"}\'';
-          let syx = 'INSERT INTO `famous` (`famous_id`, `famous_item`) VALUES (NULL,' + data + ')';
+          let data = '\'{"name":\"' + worksName + '\","info":\"' + worksInfo + '\","src":\"' + worksSrc + '\","describle":\"' + worksDescribe + '\","author":\"' + worksAuthor + '\"}\'';
+          let syx = 'INSERT INTO `works` (`works_id`, `works_item`) VALUES (NULL,' + data + ')';
           connection.query(syx, function (err, rows, fields) {
             if (err) throw err;
-            console.log('查询结果为: ', fields);
+
 
           }); //异步，要使用Promise
           connection.end();
@@ -55,40 +80,7 @@ module.exports = {
         }
 
       }
-
     });
-
-
-  },
-  get: (req, res) => {
-    if (checkToken(req.query.token)) {
-      let connection = mysql.createConnection(mysqlConfig);
-      //查询
-      connection.connect();
-      connection.query('SELECT * FROM `famous`', function (err, rows, fields) {
-        if (err) throw err;
-        console.log('查询结果为: ', rows);
-        let famousMessage = [];
-        rows.forEach(function (element) {
-          element.famous_item = JSON.parse(element.famous_item)
-
-          element.famous_item.num = element.famous_id
-
-          famousMessage.push(element.famous_item)
-        }, this);
-        res.json({
-          data: famousMessage,
-          status: 200
-        })
-      }); //异步，要使用Promise
-      connection.end();
-    } else {
-      res.json({
-        status: 404,
-        message: "token验证失败"
-      })
-    }
-
 
   },
   patch: (req, res) => {
@@ -98,9 +90,9 @@ module.exports = {
       //查询
 
       connection.connect();
-      connection.query('DELETE FROM `famous` WHERE `famous`.`famous_id` = \'' + deleteID + '\'', function (err, rows, fields) {
+      connection.query('DELETE FROM `works` WHERE `works`.`works_id` = \'' + deleteID + '\'', function (err, rows, fields) {
         if (err) throw err;
-        console.log("删除成功")
+
         res.json({
           status: 200
         })

@@ -1,7 +1,6 @@
 $(function () {
 	reset();
 	mumberItem();
-
 	addClassName(".burgerCont", ".burger");
 	addClassName(".burgerCont", ".frame");
 	addClassName(".burgerCont", ".burgerCont");
@@ -16,6 +15,9 @@ $(function () {
 	showPage(".show_work", ".workCon");
 	showWork(".workCon .page");
 	turn(".mumberFace", ".mumberData")
+	$(".join").on("click",function(){
+		$(".show_stack").trigger("click");
+	});
 });
 $(window).resize(function () {
 	reset();
@@ -166,58 +168,8 @@ function turn(face, data) {
 	$face.each(function (index) {
 		$(this).mouseover(function () {
 			{
-				// $(this).css({
-				// 	'transform': 'rotateY(0.5 turn)'
-				// });
-				// $($data[index]).css({
-				// 	'opacity': 1,
-				// 	'filter': 'alpha(opacity = 100)'
-				// })
 				console.log("over")
 			}
 		})
 	})
 }
-
-// var data = [{
-// 				id:"chenQi",
-// 				name:"陈奇",
-// 				dataTiny:"软件研发部(2012)、CERT组长(2012-2013)",
-// 				job: "就职公司：杭州胡同科技有限公司"
-// 				bgP: "../images/chenQi.png"
-// 			}
-// 			,{
-// 				id:"caoXuDong",
-// 				name:"曹旭东",
-// 				dataTiny:"网站建设部",
-// 				job: "就职公司：什么值得买"
-// 				bgP: "../images/caoXuDong.png"
-// 			},
-// 			{
-// 				id:"pengWei",
-// 				name:"彭炜",
-// 				dataTiny:"网站建设部",
-// 				job: "就职公司：百度"
-// 				bgP: "../images/pengWei.png"
-// 			},{
-// 				id:"yanMingRui",
-// 				name:"严敏睿",
-// 				dataTiny:"网络安全部(2013)",
-// 				job: "就职公司：360公司"
-// 				bgP: "../images/yanMingRui.png"
-// 			},{
-// 				id:"qiaoZhi",
-// 				name:"乔治",
-// 				dataTiny:"扫地组组长",
-// 				job: "就职公司：淘乐创想科技公司"
-// 				bgP: "../images/qiaoZhi.png"
-// 			}]
-// // function loadPic(data){
-
-// // 	for(var i = 0; i<data.length;i++){
-// // 		var html = '<div class="TeamMumberItem"><div class="mumberFace" id='+data.id+'>'
-// // 		$(".TeamMuber")[0].html(
-
-
-// // 		)
-// // 	}

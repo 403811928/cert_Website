@@ -1,65 +1,50 @@
-// var index;
-// $(function() {
-//     var bodyWidth = $(".container").width();
-//     console.log(typeof bodyWidth);
-//         var item = $(".item");
-//         var depart = $(".Depart");
-//         for (var i = 0; i < item.length; i++) {
-//             item[i].index = i;
-//             item[i].oldStyle = {
-//                     left:$(item[i]).position().left,
-//                     'z-index':$(item[i]).css('z-index')
-//                 };
-//             console.log(item[i].oldStyle);
-//             item[i].addEventListener("click", function() {
-//                 if($(item[3]).position().left >0){
+$(function () {
+    var bodyWidth = $(".container").width();
+    var items = $(".item");
+    var depart = $(".Depart");
+    items.each(function (index, item) {
+        console.log(index, item)
+        this.oldStyle = {
+            left: $(this).position().left,
+            'z-index': $(this).css('z-index')
+        };
+        this.addEventListener("click", function () {
+            if ($(items[3]).position().left > 0) {
+                var left = Math.ceil($(this).position().left);
+                console.log(left);
+                $(items).removeClass("first");
+                $(this).addClass("first");
+                var other = items.not(".first");
+                if (left >= (bodyWidth / 4)) {
+                    console.log("执行1.1");
+                    $(this).css("z-index", 3);
+                    $(this).animate({
+                        left: 0
+                    }, 800);
+                } else {
+                    console.log("执行1.2");
+                    $(this).css("z-index", 3);
+                }
+                other.animate({
+                    left: 0
+                }, 800);
+                $(depart[index]).show()
+            } else {
+                items.each(function (index, item) {
+                    $(item).animate({
+                        left: item.oldStyle.left,
+                        'z-index': 2
+                    }, 800);
+                });
+                $(this).removeClass("first");
+                console.log("执行2");
+                setTimeout(function () {
+                    $(depart[index]).hide();
+                    console.log("hide")
+                }, 800);
+                clearTimeout();
+            }
 
-//                     console.log($(item[3]).position().left);
-//                     var left = $(this).position().left;
-//                     console.log(left);
-//                     $(item).removeClass("first");
-//                     $(item[this.index]).addClass("first");
-//                     var other = item.not(".first");
-//                     if (left >= (bodyWidth / 4)) {
-//                         console.log("执行1.1");
-//                         $(item[this.index]).css("z-index",3);
-//                         $(item[this.index]).animate({
-//                             left: 0
-//                         }, 800);
-//                     }else{
-//                         console.log("执行1.2");
-//                         $(item[this.index]).css("z-index",3);
-//                     }
-//                     other.animate({
-//                         left: 0
-//                     }, 800);
-//                     $(depart[this.index]).show()
-//                 }else{
-//                     for(var b=0;b<item.length;b++){
-                        
-//                         $(item[b]).animate({
-//                             left:item[b].oldStyle.left,
-//                             'z-index':2
-//                         },800);
-//                         $(item[b]).removeClass("first");
-//                     }
-//                     index = this.index
-//                     console.log("执行2");
-//                     setTimeout(function(){$(depart[index]).hide();console.log("hide")},800);
-//                     clearTimeout();
-//                 }
-                
-//             });
-
-//         };
-// });
-
-// function setCss(name){
-//    var name = $("."+name);
-//    for(var i=0;i<name.length;i++){
-//     name[i].css({
-//         left:name[i].oldStyle.left,
-//         'z-index':name[i].oldStyle['z-index']
-//         });
-//     }
-// }
+        });
+    })
+});
