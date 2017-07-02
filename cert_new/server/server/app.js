@@ -1,47 +1,48 @@
 var express = require('express');
 var app = express();
-var mysql = require('mysql');
+var mysql = require('mysql');//mysql模块
 var cors = require('cors'); //跨域功能
 var bodyParser = require('body-parser'); //引入请求体的解析包
 var multiparty = require('multiparty'); //图片等文件上传
-var path = require('path');
+var path = require('path');//路径信息
 var fs = require("fs")
 var mv = require('mv');
 var util = require("util")
-const secret = fs.readFileSync("publicKey.txt", 'utf-8');
-app.use(cors())
+var jwt = require("jwt-simple");
+var moment = require('moment');
+const secret = fs.readFileSync("publicKey.txt", 'utf-8');//获得密钥
+app.use(cors())//使用跨域中间件
 app.use(bodyParser.json()); //解析中间件，并获取前端传来的数据
-const mysqlConfig = {
+const mysqlConfig = { //配置数据库信息
   host: 'localhost',
   user: 'root',
   password: '',
   database: 'cert',
   port: '3306'
 };
-var jwt = require("jwt-simple");
 
-var moment = require('moment');
 //生成token
 function token(payload) {
   let token = jwt.encode(payload, secret);
   let decode = jwt.decode(token, secret);
   return token;
 }
-
+//检查token信息是否过期
 function checkToken(token) {
   let decode = jwt.decode(token, secret);
-  let now = moment().valueOf()
-  if (now <= decode.time) {
+  let now = moment().valueOf() //获取现在的时间
+  if (now <= decode.time) { //与token中的时间对比
     return true
   } else {
     return false
   }
 }
-
+//token解码
 function decodeToken(token) {
   let decode = jwt.decode(token, secret);
   return decode;
 }
+//检查登录信息是否有效
 app.post("/isLogin", function (req, res) {
   if (checkToken(req.body.token)) {
     let userName = decodeToken(req.body.token)
@@ -54,7 +55,7 @@ app.post("/isLogin", function (req, res) {
   }
 })
 //登录操作
-let login = require("./login.js")
+let login = require("./login.js");
 app.post('/login', [login.post]);
 
 //名人堂操作
@@ -74,10 +75,11 @@ app.post('/works', [works.post]);
 app.get('/works', [works.get]);
 app.patch("/works", [works.pacth]);
 
+//图片链接
 app.get('/img/:filename', function (req, res) {
-  var filePath = path.join('./files/', req.params.filename);
+  var filePath = path.join('./files/', req.params.filename); //获取本地文件的链接
   fs.exists(filePath, function (exists) {
-    res.sendfile(filePath);
+    res.sendfile(filePath);//发送此文件
   });
 });
 
