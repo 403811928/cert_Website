@@ -75,11 +75,11 @@
         </tr>
       </table>
       <div class="pageBox" v-if="pageCount >= 2">
-        <button class="btnPage btnLast">上一页</button>
+        <button class="btnPage btnLast" @click="pageLast()">上一页</button>
         <div class="btnGroup">
-          <button class="btnPage" v-for="(page,index) in pageCount" @click="page(index)">{{index+1}}</button>
+          <button class="btnPage" v-for="(page,index) in pageCount" @click="select(index)">{{index+1}}</button>
         </div>
-        <button class="btnPage btnNext">下一页</button>
+        <button class="btnPage btnNext" @click="pageNext()">下一页</button>
       </div>
     </div>
   </home>
@@ -98,9 +98,11 @@ export default {
   data() {
     return {
       listItem: [],
-      pageCount: 5,
-      pageItem:[],
-      pageIndex:"",
+      pageCount: "",
+      pageItem: [],
+      pageIndex: "",
+      pageIndex: "",
+      pageNum: 4,
       layerShow: false,
       addDescribe: '',
       addName: '',
@@ -112,94 +114,112 @@ export default {
     }
   },
   methods: {
-    pageCount(){ //分页功能
-      this.pageCount = Math.ceil(this.listItem.length /5);
+    page() { //分页功能
+      this.pageCount = Math.ceil(this.listItem.length / 4);
     },
-    pageLast(index){ //上一页
+    pageLast() { //上一页
+      if (this.pageIndex > 1) {
+
+        let start = (this.pageIndex - 2) * this.pageNum;
+        let end = ((this.pageIndex - 1) * this.pageNum);
+        this.pageItem = this.listItem.slice(start, end);
+        this.pageIndex -= 1;
+        console.log("index" + this.pageIndex, "start" + start, "end" + end, "pageItem" + this.pageItem);
+      }
 
     },
-    pageNext(index){//下一页
-
+    select(index) {
+      this.pageIndex = index;
+      let start = this.pageIndex * this.pageNum;
+      let end = ((this.pageIndex + 1) * this.pageNum);
+      this.pageItem = this.listItem.slice(start, end);
+      console.log("index" + this.pageIndex, "start" + start, "end" + end, "pageItem" + this.pageItem);
+    },
+    pageNext() {//下一页
+      if (this.pageIndex < this.pageCount) {
+        let start = this.pageIndex * this.pageNum;
+        let end = ((this.pageIndex + 1) * this.pageNum);
+        this.pageIndex += 1;
+        this.pageItem = this.listItem.slice(start, end);
+        console.log("index" + this.pageIndex, "start" + start, "end" + end, "pageItem" + this.pageItem);
+      }
     },
     validate(data) { //验证登录
       if (data == 404) {
-        this.$router.push({ path: "/" })
+        this.$router.push({ path: "/" });
         window.localStorage.removeItem("token");
         this.showToast("token验证失败,请重新登录");
       }
     },
     setImgSrc(value, file) { //通过setImgSrc 获取上传的图片的file对象
-      this.addImg = file
-
+      this.addImg = file;
     },
     addFamous() { //改变layerShow 的布尔值来实现弹出框的出现和消失
-      this.layerShow = !this.layerShow
+      this.layerShow = !this.layerShow;
     },
     cancel() {
-      this.layerShow = !this.layerShow
+      this.layerShow = !this.layerShow;
     },
     upload() {
       const formData = new FormData() //新建一个formData类型 因为需要添加文件，所以选用formData
-      formData.append('file', this.addImg)
-      formData.append('addName', this.addName)
-      formData.append("addInfo", this.addInfo)
-      formData.append("addDescribe", this.addDescribe)
-      formData.append("token", window.localStorage.getItem("token"))
+      formData.append('file', this.addImg);
+      formData.append('addName', this.addName);
+      formData.append("addInfo", this.addInfo);
+      formData.append("addDescribe", this.addDescribe);
+      formData.append("token", window.localStorage.getItem("token"));
       let config = {
         header: { 'Content-type': 'application/x-www-form-urlencoded' }
-      }
+      };
       if (this.addImg) {
         this.$http.post(this.postURL, formData, config).then((res) => {
- 
+
           if (res.status == 200) {
             this.layerShow = !this.layerShow;
-            this.getInfo()//获取信息
+            this.getInfo();//获取信息
             this.showToast("添加"); //给吐司条传递信息
           } else {
-            this.$router.push({ path: "/" })
-            window.localStorage.removeItem("token")
+            this.$router.push({ path: "/" });
+            window.localStorage.removeItem("token");
           }
         });
-      } else {
-
       }
-
     },
     showToast(value, time = 800) {//吐司条 
       this.toastShow = !this.toastShow;
       this.toast = value;
       let that = this;
-
       setTimeout(function () { that.toastShow = !that.toastShow }, time);
     },
     getInfo() {//通过GET方法来获得数据，每次都清空listItem 并更新listItem 数据驱动组件更新
       this.$http.get(this.postURL, { params: { token: window.localStorage.getItem("token") } }).then(res => {
         if (res.data.status == 404) {
-          this.$router.push({ path: "/" })
-          window.localStorage.removeItem("token")
+          this.$router.push({ path: "/" });
+          window.localStorage.removeItem("token");
         } else if (res.data.status == 200) {
           this.listItem = [];
           res.data.data.forEach((item) => {
-            this.listItem.push(item)
-          }, this)
+            this.listItem.push(item);
+          }, this);
+          this.pageIndex = 1;
+          this.pageItem = this.listItem.slice(0, this.pageNum);
+          this.page();
         }
       })
     },
     del(num) {
-
       this.$http.patch(this.postURL, { "data": num, "token": window.localStorage.getItem("token") }).then(res => {
         if (res.data.status == 200) {
-          this.getInfo()
+          this.getInfo();
           this.showToast("删除");
         } else if (res.data.status == 404) {
-          this.$router.push({ path: "/" })
-          window.localStorage.removeItem("token")
+          this.$router.push({ path: "/" });
+          window.localStorage.removeItem("token");
         }
       })
     }
   },
   created() {
-    this.getInfo()
+    this.getInfo();
   }
 }
 </script>

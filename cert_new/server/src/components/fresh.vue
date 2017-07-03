@@ -40,12 +40,12 @@
           </td>
         </tr>
       </table>
-      <div class="pageBox">
-        <button class="btnPage btnLast">上一页</button>
+      <div class="pageBox" v-if="pageCount >= 2">
+        <button class="btnPage btnLast" @click="pageLast()">上一页</button>
         <div class="btnGroup">
-          <button class="btnPage" v-for="(page,index) in pageCount" @click="page(index)">{{index+1}}</button>
+          <button class="btnPage" v-for="(page,index) in pageCount" @click="select(index)">{{index+1}}</button>
         </div>
-        <button class="btnPage btnNext">下一页</button>
+        <button class="btnPage btnNext" @click="pageNext()">下一页</button>
       </div>
     </div>
   </home>
@@ -62,7 +62,11 @@ export default {
   data() {
     return {
       listItem: [],
-      pageCount: 5,
+      pageCount: "",
+      pageItem: [],
+      pageIndex: "",
+      pageIndex: "",
+      pageNum: 4,
       toast: "",
       toastShow: false,
       postURL: "http://localhost:3000/fresh/",
@@ -71,12 +75,42 @@ export default {
   },
   components: { home, uploadImg },
   methods: {
+    page() { //分页功能
+      this.pageCount = Math.ceil(this.listItem.length / 4);
+    },
+    pageLast() { //上一页
+      if (this.pageIndex > 1) {
+
+        let start = (this.pageIndex - 2) * this.pageNum;
+        let end = ((this.pageIndex - 1) * this.pageNum);
+        this.pageItem = this.listItem.slice(start, end);
+        this.pageIndex -= 1;
+        console.log("index" + this.pageIndex, "start" + start, "end" + end, "pageItem" + this.pageItem);
+      }
+
+    },
+    select(index) {
+      this.pageIndex = index;
+      let start = this.pageIndex * this.pageNum;
+      let end = ((this.pageIndex + 1) * this.pageNum);
+      this.pageItem = this.listItem.slice(start, end);
+      console.log("index" + this.pageIndex, "start" + start, "end" + end, "pageItem" + this.pageItem);
+    },
+    pageNext() {//下一页
+      if (this.pageIndex < this.pageCount) {
+        let start = this.pageIndex * this.pageNum;
+        let end = ((this.pageIndex + 1) * this.pageNum);
+        this.pageIndex += 1;
+        this.pageItem = this.listItem.slice(start, end);
+        console.log("index" + this.pageIndex, "start" + start, "end" + end, "pageItem" + this.pageItem);
+      }
+    },
     fix(num) {
 
     },
     validate(data) {
       if (data == 404) {
-        this.$router.push({ path: "/" })
+        this.$router.push({ path: "/" });
         window.localStorage.removeItem("token");
         this.showToast("token验证失败,请重新登录");
       }
@@ -87,8 +121,8 @@ export default {
           this.getInfo()
           this.showToast("删除");
         } else if (res.data.status == 404) {
-          this.$router.push({ path: "/" })
-          window.localStorage.removeItem("token")
+          this.$router.push({ path: "/" });
+          window.localStorage.removeItem("token");
         }
       })
     },
@@ -101,19 +135,22 @@ export default {
     getInfo() {
       this.$http.get(this.postURL, { params: { token: window.localStorage.getItem("token") } }).then(res => {
         if (res.data.status == 404) {
-          this.$router.push({ path: "/" })
-          window.localStorage.removeItem("token")
+          this.$router.push({ path: "/" });
+          window.localStorage.removeItem("token");
         } else if (res.data.status == 200) {
           this.listItem = [];
           res.data.data.forEach((item) => {
-            this.listItem.push(item)
-          }, this)
+            this.listItem.push(item);
+          }, this);
+          this.pageIndex = 1;
+          this.pageItem = this.listItem.slice(0, this.pageNum);
+          this.page();
         }
       })
     }
   },
   created() {
-    this.getInfo()
+    this.getInfo();
   }
 }
 </script>

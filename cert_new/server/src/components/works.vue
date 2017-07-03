@@ -74,12 +74,12 @@
           </td>
         </tr>
       </table>
-      <div class="pageBox">
-        <button class="btnPage btnLast">上一页</button>
+      <div class="pageBox" v-if="pageCount >= 2">
+        <button class="btnPage btnLast" @click="pageLast()">上一页</button>
         <div class="btnGroup">
-          <button class="btnPage" v-for="(page,index) in pageCount" @click="page(index)">{{index+1}}</button>
+          <button class="btnPage" v-for="(page,index) in pageCount" @click="select(index)">{{index+1}}</button>
         </div>
-        <button class="btnPage btnNext">下一页</button>
+        <button class="btnPage btnNext" @click="pageNext()">下一页</button>
       </div>
     </div>
   </home>
@@ -96,64 +96,93 @@ export default {
   data() {
     return {
       listItem: [],
+      pageCount: "",
+      pageItem: [],
+      pageIndex: "",
+      pageIndex: "",
+      pageNum: 4,
       layerShow: false,
       worksDescribe: '',
       worksName: '',
       worksImg: {},
       worksAuthor: '',
-      pageCount: 5,
       toast: "",
       toastShow: false,
       postURL: "http://localhost:3000/works/"
     }
   },
   methods: {
-    countPage(length) {
-      this.pageCont = Math(length % 6);
+    page() { //分页功能
+      this.pageCount = Math.ceil(this.listItem.length / 4);
+    },
+    pageLast() { //上一页
+      if (this.pageIndex > 1) {
+
+        let start = (this.pageIndex - 2) * this.pageNum;
+        let end = ((this.pageIndex - 1) * this.pageNum);
+        this.pageItem = this.listItem.slice(start, end);
+        this.pageIndex -= 1;
+        console.log("index" + this.pageIndex, "start" + start, "end" + end, "pageItem" + this.pageItem);
+      }
+
+    },
+    select(index) {
+      this.pageIndex = index;
+      let start = this.pageIndex * this.pageNum;
+      let end = ((this.pageIndex + 1) * this.pageNum);
+      this.pageItem = this.listItem.slice(start, end);
+      console.log("index" + this.pageIndex, "start" + start, "end" + end, "pageItem" + this.pageItem);
+    },
+    pageNext() {//下一页
+      if (this.pageIndex < this.pageCount) {
+        let start = this.pageIndex * this.pageNum;
+        let end = ((this.pageIndex + 1) * this.pageNum);
+        this.pageIndex += 1;
+        this.pageItem = this.listItem.slice(start, end);
+        console.log("index" + this.pageIndex, "start" + start, "end" + end, "pageItem" + this.pageItem);
+      }
     },
     validate(data) {
       if (data == 404) {
-        this.$router.push({ path: "/" })
+        this.$router.push({ path: "/" });
         window.localStorage.removeItem("token");
         this.showToast("token验证失败,请重新登录");
       }
     },
     setImgSrc(value, file) {
-      this.worksImg = file
+      this.worksImg = file;
 
     },
     addWorks() {
-      this.layerShow = !this.layerShow
+      this.layerShow = !this.layerShow;
     },
     cancel() {
-      this.layerShow = !this.layerShow
+      this.layerShow = !this.layerShow;
     },
     upload() {
 
       const formData = new FormData()
-      formData.append('file', this.worksImg)
-      formData.append('worksName', this.worksName)
-      formData.append("worksInfo", this.worksInfo)
-      formData.append("worksDescribe", this.worksDescribe)
-      formData.append("worksAuthor", this.worksAuthor)
-      formData.append("token", window.localStorage.getItem("token"))
+      formData.append('file', this.worksImg);
+      formData.append('worksName', this.worksName);
+      formData.append("worksInfo", this.worksInfo);
+      formData.append("worksDescribe", this.worksDescribe);
+      formData.append("worksAuthor", this.worksAuthor);
+      formData.append("token", window.localStorage.getItem("token"));
       let config = {
         header: { 'Content-type': 'application/x-www-form-urlencoded' }
-      }
+      };
       if (this.worksImg) {
         this.$http.post(this.postURL, formData, config).then((res) => {
 
           if (res.status == 200) {
             this.layerShow = !this.layerShow;
-            this.getInfo()
+            this.getInfo();
             this.showToast("添加");
           } else {
-            this.$router.push({ path: "/" })
-            window.localStorage.removeItem("token")
+            this.$router.push({ path: "/" });
+            window.localStorage.removeItem("token");
           }
         });
-      } else {
-
       }
 
     },
@@ -167,15 +196,17 @@ export default {
     getInfo() {
       this.$http.get(this.postURL, { params: { token: window.localStorage.getItem("token") } }).then(res => {
         if (res.data.status == 404) {
-          this.$router.push({ path: "/" })
-          window.localStorage.removeItem("token")
+          this.$router.push({ path: "/" });
+          window.localStorage.removeItem("token");
         } else if (res.data.status == 200) {
 
           this.listItem = [];
           res.data.data.forEach((item) => {
-            this.listItem.push(item)
-          }, this)
-
+            this.listItem.push(item);
+          }, this);
+          this.pageIndex = 1;
+          this.pageItem = this.listItem.slice(0, this.pageNum);
+          this.page();
         }
       })
     },
@@ -183,17 +214,17 @@ export default {
 
       this.$http.patch(this.postURL, { "data": num, "token": window.localStorage.getItem("token") }).then(res => {
         if (res.data.status == 200) {
-          this.getInfo()
+          this.getInfo();
           this.showToast("删除");
         } else if (res.data.status == 404) {
-          this.$router.push({ path: "/" })
-          window.localStorage.removeItem("token")
+          this.$router.push({ path: "/" });
+          window.localStorage.removeItem("token");
         }
       })
     }
   },
   created() {
-    this.getInfo()
+    this.getInfo();
   }
 }
 </script>
