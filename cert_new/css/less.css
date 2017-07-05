@@ -535,6 +535,7 @@ footer a {
   position: absolute;
   top: 0;
   overflow: hidden;
+  cursor: pointer;
 }
 .center {
   position: absolute;
@@ -1015,6 +1016,115 @@ p {
   top: 0;
 }
 /* 图片趣事结束 */
+/* 报名*/
+.joinCon {
+  font-size: 1.4rem;
+  position: absolute;
+  z-index: 2;
+  left: 2000px;
+  background-image: url(../images/banner2.jpg);
+  background-size: cover;
+  -webkit-transition: all 1s;
+  -moz-transition: all 1s;
+  -ms-transition: all 1s;
+  -o-transition: all 1s;
+}
+.joinCon1Animate {
+  left: 0;
+}
+.joinForm {
+  display: block;
+  width: 450px;
+}
+.joinCon .secondColumn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.joinForm input,
+select {
+  height: 35px;
+  border-radius: 4px;
+  border: 0;
+  padding-left: 5px;
+  width: 300px;
+}
+.joinForm select {
+  width: 304px;
+}
+.form-group {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+.button-group {
+  justify-content: flex-start;
+}
+#notify {
+  display: none;
+  margin-left: 1rem;
+  font-size: 1rem;
+  line-height: 2;
+  font-weight: bold;
+  color: black;
+}
+#success {
+  display: none;
+  min-width: 200px;
+  max-width: 400px;
+  height: 60px;
+  line-height: 60px;
+  text-align: center;
+  background-color: rgba(0, 0, 0, 0.5);
+  position: absolute;
+  bottom: 5rem;
+  border-radius: 30px;
+  font-size: 1rem;
+  color: white;
+}
+.form-group label {
+  padding-right: 2rem;
+  color: white;
+}
+.subJoin:hover {
+  box-shadow: 0 0px 10px 0 rgba(255, 255, 255, 0.6);
+}
+.subJoin {
+  background: linear-gradient(to bottom right, #fd2638, #3d8cd7, #48ecb6);
+  background-repeat: no-repeat;
+  background-size: 500% 500%;
+  animation: gradient 80s ease infinite;
+  border: none;
+  width: 100px;
+  border-radius: 15px;
+  height: 30px;
+  color: white;
+  cursor: pointer;
+  position: relative;
+  z-index: 10;
+  transition: box-shadow 0.5s;
+}
+.joinCon .firstPage {
+  background: linear-gradient(to bottom right, #fd2638, #3d8cd7, #48ecb6);
+  background-repeat: no-repeat;
+  background-size: 500% 500%;
+  animation: gradient 80s ease infinite;
+}
+.joinCon .firstColumn,
+.secondColumn {
+  background: none;
+}
+@keyframes gradient {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
 /* 内容显示层结束 */
 /* 响应式 */
 @media screen and (max-height: 901px) and (min-height: 801px) {

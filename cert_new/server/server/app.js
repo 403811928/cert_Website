@@ -10,6 +10,7 @@ var mv = require('mv');
 var util = require("util")
 const secret = fs.readFileSync("publicKey.txt", 'utf-8');
 app.use(cors())
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json()); //解析中间件，并获取前端传来的数据
 const mysqlConfig = {
   host: 'localhost',
@@ -432,13 +433,15 @@ app.get('/img/:filename', function (req, res) {
 });
 
 app.post("/fresh", (req, res) => {
+  console.log(req)
   let name = req.body.name
-  let qq = req.body.qq
+  let qq = req.body.QQ
   let phone = req.body.phone
-  let describle = req.body.describle
+  let depart = req.body.depart
+  let college = req.body.college
   let connection = mysql.createConnection(mysqlConfig);
   connection.connect();
-  let data = '\'{"name":\"' + name + '\","qq":\"' + qq + '\","phone":\"' + phone + '\","describe":\"' + describe + '\"}\'';
+  let data = '\'{"name":\"' + name + '\","qq":\"' + qq + '\","phone":\"' + phone + '\","college":\"' + college + '\","depart":\"' + depart + '\"}\'';
   let syx = 'INSERT INTO `fresh` (`fresh_id`, `fresh_item`) VALUES (NULL,' + data + ')';
   connection.query(syx, function (err, rows, fields) {
     if (err) throw err;
@@ -451,33 +454,26 @@ app.post("/fresh", (req, res) => {
 
 })
 app.get("/fresh", (req, res) => {
-  if (checkToken(req.query.token)) {
-    let connection = mysql.createConnection(mysqlConfig);
-    //查询
-    connection.connect();
-    connection.query('SELECT * FROM `fresh`', function (err, rows, fields) {
-      if (err) throw err;
-      console.log('查询结果为: ', rows);
-      let freshMessage = [];
-      rows.forEach(function (element) {
-        element.fresh_item = JSON.parse(element.fresh_item)
+  let connection = mysql.createConnection(mysqlConfig);
+  //查询
+  connection.connect();
+  connection.query('SELECT * FROM `fresh`', function (err, rows, fields) {
+    if (err) throw err;
+    console.log('查询结果为: ', rows);
+    let freshMessage = [];
+    rows.forEach(function (element) {
+      element.fresh_item = JSON.parse(element.fresh_item)
 
-        element.fresh_item.num = element.fresh_id
+      element.fresh_item.num = element.fresh_id
 
-        freshMessage.push(element.fresh_item)
-      }, this);
-      res.json({
-        data: freshMessage,
-        status: 200
-      })
-    }); //异步，要使用Promise
-    connection.end();
-  } else {
+      freshMessage.push(element.fresh_item)
+    }, this);
     res.json({
-      status: 404,
-      message: "token验证失败"
+      data: freshMessage,
+      status: 200
     })
-  }
+  }); //异步，要使用Promise
+  connection.end();
 });
 app.patch("/fresh", (req, res) => {
   if (checkToken(req.body.token)) {

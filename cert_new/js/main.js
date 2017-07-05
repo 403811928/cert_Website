@@ -15,9 +15,7 @@ $(function () {
 	showPage(".show_work", ".workCon");
 	showWork(".workCon .page");
 	turn(".mumberFace", ".mumberData")
-	$(".join").on("click",function(){
-		$(".show_stack").trigger("click");
-	});
+	showPage(".join", ".joinCon");
 });
 $(window).resize(function () {
 	reset();
@@ -31,7 +29,7 @@ function reset() {
 	$(".rightFrame,.leftFrame").attr("style", 'height:' + borderHeight + "px");
 	$(".iconTeam,.iconProduct").attr("style", "left:" + parseInt((borderWidth / 2) - 23) + "px");
 	$(".iconAbout,.iconDepartment").attr("style", "top:" + parseInt((borderHeight / 2) - 23) + "px;");
-	$(".pageCont,.teamCon,.workCon,.stackCon,.contactCon").attr("style", "width:" + borderWidth + "px;height:" + parseInt(borderHeight + 2) + "px;");
+	$(".pageCont,.teamCon,.workCon,.stackCon,.contactCon,.joinCon").attr("style", "width:" + borderWidth + "px;height:" + parseInt(borderHeight + 2) + "px;");
 	$(".burgerCont").attr("style", "left:" + parseInt(borderWidth / 2 - 17) + "px;");
 }
 
@@ -123,6 +121,9 @@ function showPage(target, page) {
 			if ($(other[i]).hasClass("stackCon1Animate")) {
 				$(other[i]).removeClass("stackCon1Animate");
 			}
+			if ($(other[i]).hasClass("joinCon1Animate")) {
+				$(other[i]).removeClass("joinCon1Animate");
+			}
 		}
 	})
 	// target.bind("clikck",funciton(){
@@ -172,4 +173,48 @@ function turn(face, data) {
 			}
 		})
 	})
+}
+
+function subJoin() {
+	var name = $("input.joinName").val();
+	var phone = $("input.joinPhone").val();
+	var QQ = $("input.joinQQ").val();
+	var college = $("input.joinCollege").val();
+	var depart = $(".joinDepart").val();
+
+	var msg = '';
+	var numreg = new RegExp("^[0-9]*$");
+	var hanreg = new RegExp('^[\u4e00-\u9fa5]+$');
+	if (name.length > 7 || name.length < 1) {
+		msg = "姓名长度？(╯‵□′)╯︵┻━┻";
+	} else if (!hanreg.test(name)) {
+		msg = "姓名不对！（〃｀д´ ) 👚﻿";
+	} else if (phone.length != 11 || phone.length < 1) {
+		msg = "手机号长度？(╯‵□′)╯︵┻━┻";
+	} else if (!numreg.test(phone)) {
+		msg = "手机号不对！（〃｀д´ ) 👚﻿";
+	} else if (depart.length < 1) {
+		msg = "部门呢？（〃｀д´ ) 👚﻿";
+	}
+	if (msg.length > 0) {
+		$('#notify').text(msg);
+		$('#notify').show();
+		$('#notify').hide(1000);
+		return;
+	}
+	$.post("http://localhost:3000/fresh",'name='+name+'&college='+college+'&QQ='+QQ+'&phone='+phone+'&depart='+depart,function (data) {
+			console.log(data);
+			console.log(data.status);
+			if (data.status == 200) {
+				$("#success").html("报名成功!请等待短信或邮件提醒");
+				$("#success").show();
+				$("#success").hide(1000);
+
+			} else {
+				$("#success").html(":(失败了");
+				$("#success").show();
+				$("#success").hide(1000);
+
+			}
+		});
 }

@@ -24,9 +24,8 @@
 </head>
 
 <body>
-	<!--<div class="loading">
-	</div>-->
-
+	<div class="loading">
+	</div>
 	<a class="frame topFrame show_team">
 		<span class="menuIcon iconTeam">
 			<img src="images/team.png" alt="名人堂图标">
@@ -342,50 +341,18 @@
 					</div>
 					<div class="mask mask4"></div>
 				</div>
-				<div class="Depart Depart1">
-					<div class="departDes">
-
-					</div>
-					<div class="departPhoto">
-
-					</div>
-					<div class="departPeople">
-
-					</div>
+				<!--<div class="Depart Depart1">
+					
 				</div>
 				<div class="Depart Depart2">
-					<div class="departDes">
-
-					</div>
-					<div class="departPhoto">
-
-					</div>
-					<div class="departPeople">
-
-					</div>
+					
 				</div>
 				<div class="Depart Depart3">
-					<div class="departDes">
-
-					</div>
-					<div class="departPhoto">
-
-					</div>
-					<div class="departPeople">
-
-					</div>
+					
 				</div>
 				<div class="Depart Depart4">
-					<div class="departDes">
-
-					</div>
-					<div class="departPhoto">
-
-					</div>
-					<div class="departPeople">
-
-					</div>
-				</div>
+					
+				</div>-->
 			</div>
 		</div>
 		<div class="contactCon">
@@ -474,6 +441,58 @@
 			        </a></li>
 				</ul>
 			</footer>
+		</div>
+		<div class="joinCon">
+			<div class="page firstPage">
+				<div class="firstColumn">
+					<div class="CERTLogo">CERT</div>
+					<div class="teamText">
+						<span class='teamText-tiny'>专注&nbsp;I&nbsp;T&nbsp;技术 </span>
+						<br>
+						<span class="teamText-strong">服务交大师生</span>
+						<div class="description">
+							<span></span>
+							<span></span>
+							<span></span>
+							<span></span>
+						</div>
+					</div>
+				</div>
+				<div class="secondColumn">
+					<form class="joinForm" action="javascript:0;">
+						<div class="form-group">
+							<label for="">姓名</label>
+							<input type="text" class="joinName" placeholder="请输入你的名字">
+						</div>
+						<div class="form-group">
+							<label for="">联系方式</label>
+							<input type="text" class="joinPhone" placeholder="请输入你的联系方式">
+						</div>
+						<div class="form-group">
+							<label for="">QQ</label>
+							<input type="text" class="joinQQ" placeholder="请输入你的QQ">
+						</div>
+						<div class="form-group">
+							<label for="">学院</label>
+							<input type="text" class="joinCollege" placeholder="请输入你的学院">
+						</div>
+						<div class="form-group">
+							<label for="">部门</label>
+							<select class="joinDepart">
+							<option value ="产品设计部">产品设计部</option>
+							<option value ="技术研发部">技术研发部</option>
+							<option value="硬件维修部">硬件维修部</option>
+							<option value="产品创意部">产品创意部</option>
+						</select>
+						</div>
+						<div class="form-group button-group">
+							<button class="subJoin" onclick="subJoin()">提交</button>
+							<div id="notify"></div>
+						</div>
+					</form>
+					<div id="success"></div>
+				</div>
+			</div>
 		</div>
 	</div>
 </body>
