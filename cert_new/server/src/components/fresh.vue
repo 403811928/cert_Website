@@ -14,7 +14,8 @@
           <th class="itemImg">姓名</th>
           <th class="itemDescribe">QQ</th>
           <th class="itemDate">电话</th>
-          <th class="itemDate">专业信息</th>
+          <th class="itemDate">学院</th>
+          <th class="itemDate">意向部门</th>
           <th class="itemBtn">操作</th>
         </tr>
         <tr class="tableLine" v-if="listItem.length == 0">
@@ -26,13 +27,16 @@
             {{item.name}}
           </td>
           <td>
-            {{item.QQ}}
+            {{item.qq}}
           </td>
           <td>
             {{item.phone}}
           </td>
           <td>
-            {{item.describe}}
+            {{item.college}}
+          </td>
+          <td>
+            {{item.depart}}
           </td>
           <td class="itemImg">
             <button class="btnFix" @click="fix(item.num)">修改</button>
@@ -69,7 +73,7 @@ export default {
       pageNum: 4,
       toast: "",
       toastShow: false,
-      postURL: "http://localhost:3000/fresh/",
+      postURL: "http://lj661.cn:8000/fresh/",
 
     }
   },

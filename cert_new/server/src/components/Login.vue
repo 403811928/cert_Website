@@ -106,8 +106,8 @@ export default {
       checkboxInside: 'inside', //checkbox 的内部
       validation: true, //是否验证
       focusStatus: false, //密码框是否选中,
-      loginApi: 'http://localhost:3000/login/',//登录的URL
-      isLoginApi: "http://localhost:3000/isLogin/"//判断登录状态的URL
+      loginApi: 'http://lj661.cn:8000/login/',//登录的URL
+      isLoginApi: "http://lj661.cn:8000/isLogin/"//判断登录状态的URL
     }
   },
   methods: {

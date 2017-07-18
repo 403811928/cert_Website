@@ -102,7 +102,7 @@ export default {
       photoImg: {},
       toast: "",
       toastShow: false,
-      postURL: "http://localhost:3000/photo/"
+      postURL: "http://lj661.cn:8000/photo/"
     }
   },
   components: { home, uploadImg },

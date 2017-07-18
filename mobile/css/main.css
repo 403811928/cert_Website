@@ -257,6 +257,42 @@ a:link
 
     color: white;
 }
+.register {
+    text-align: center;
+    margin-top: 40px;
+}
+
+.join:hover {
+    box-shadow: 0 0px 10px 0 rgba(255, 255, 255, 0.6);
+}
+
+.join {
+    background: linear-gradient( to bottom right, #fd2638, #3d8cd7, #48ecb6);
+    background-repeat: no-repeat;
+    background-size: 500% 500%;
+    animation: gradient 80s ease infinite;
+    border: none;
+    width: 100px;
+    border-radius: 15px;
+    height: 30px;
+    color: white;
+    cursor: pointer;
+    position: relative;
+    z-index: 10;
+    transition: box-shadow 0.5s;
+}
+
+@keyframes gradient {
+    0% {
+        background-position: 0% 0%
+    }
+    50% {
+        background-position: 100% 100%
+    }
+    100% {
+        background-position: 0% 0%
+    }
+}
 /*首屏样式结束*/
 
 /*第二屏样式开始*/

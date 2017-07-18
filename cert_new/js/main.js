@@ -202,7 +202,7 @@ function subJoin() {
 		$('#notify').hide(1000);
 		return;
 	}
-	$.post("http://localhost:3000/fresh",'name='+name+'&college='+college+'&QQ='+QQ+'&phone='+phone+'&depart='+depart,function (data) {
+	$.post("http://lj661.cn:8000/fresh",'name='+name+'&college='+college+'&QQ='+QQ+'&phone='+phone+'&depart='+depart,function (data) {
 			console.log(data);
 			console.log(data.status);
 			if (data.status == 200) {

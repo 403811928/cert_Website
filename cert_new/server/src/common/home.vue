@@ -75,7 +75,7 @@ export default {
       bottomItem: [
         { icon: "icon-orderlisto", router: "/advice", name: "建议反馈" },
       ],
-      isLoginApi: "http://localhost:3000/isLogin/"
+      isLoginApi: "http://lj661.cn:8000/isLogin/"
     }
   },
   methods: {

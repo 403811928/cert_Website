@@ -108,7 +108,7 @@ export default {
       worksAuthor: '',
       toast: "",
       toastShow: false,
-      postURL: "http://localhost:3000/works/"
+      postURL: "http://lj661.cn:8000/works/"
     }
   },
   methods: {

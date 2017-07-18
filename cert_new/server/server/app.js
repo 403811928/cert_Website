@@ -15,7 +15,7 @@ app.use(bodyParser.json()); //解析中间件，并获取前端传来的数据
 const mysqlConfig = {
   host: 'localhost',
   user: 'root',
-  password: '',
+  password: 'Aini0124.',
   database: 'cert',
   port: '3306'
 };
@@ -118,7 +118,7 @@ app.post('/famous', (req, res) => {
         let addName = fields.addName[0];
         let addInfo = fields.addInfo[0];
         let addDescribe = fields.addDescribe[0];
-        let addSrc = "http://localhost:3000/img/" + inputFile.originalFilename;
+        let addSrc = "http://lj661.cn:8000/img/" + inputFile.originalFilename;
 
         // 重命名为真实文件名
         mv(uploadedPath, dstPath, function (err) {
@@ -230,7 +230,7 @@ app.post('/photo', (req, res) => {
         var dstPath = './files/' + inputFile.originalFilename;
         let photoDate = fields.photoDate[0];
         let photoDescribe = fields.photoDescribe[0];
-        let photoSrc = "http://localhost:3000/img/" + inputFile.originalFilename;
+        let photoSrc = "http://lj661.cn:8000/img/" + inputFile.originalFilename;
 
         // 重命名为真实文件名
         mv(uploadedPath, dstPath, function (err) {
@@ -335,7 +335,7 @@ app.post('/works', (req, res) => {
         let worksInfo = fields.worksInfo[0];
         let worksAuthor = fields.worksAuthor[0];
         let worksDescribe = fields.worksDescribe[0];
-        let worksSrc = "http://localhost:3000/img/" + inputFile.originalFilename;
+        let worksSrc = "http://lj661.cn:8000/img/" + inputFile.originalFilename;
 
         // 重命名为真实文件名
         mv(uploadedPath, dstPath, function (err) {
@@ -497,7 +497,7 @@ app.patch("/fresh", (req, res) => {
     })
   }
 })
-var server = app.listen(3000, function () {
+var server = app.listen(8000, function () {
   var host = server.address().address;
   var port = server.address().port;
 
