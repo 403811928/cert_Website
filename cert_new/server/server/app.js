@@ -13,7 +13,7 @@ app.use(cors())
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json()); //解析中间件，并获取前端传来的数据
 const mysqlConfig = {
-  host: 'localhost',
+  host: '119.29.239.95',
   user: 'root',
   password: 'Aini0124.',
   database: 'cert',
@@ -442,17 +442,30 @@ app.post("/fresh", (req, res) => {
   let connection = mysql.createConnection(mysqlConfig);
   connection.connect();
   let data = '\'{"name":\"' + name + '\","qq":\"' + qq + '\","phone":\"' + phone + '\","college":\"' + college + '\","depart":\"' + depart + '\"}\'';
-  let syx = 'INSERT INTO `fresh` (`fresh_id`, `fresh_item`) VALUES (NULL,' + data + ')';
-  connection.query(syx, function (err, rows, fields) {
-    if (err) throw err;
-    console.log('查询结果为: ', fields);
-    res.json({
-      status: 200
-    })
-  }); //异步，要使用Promise
-  connection.end();
+  let syxCompair = 'SELECT * FROM `fresh` WHERE `fresh_item` ->"$.qq" = "'+qq+'";'
+  console.log(syxCompair);
+  connection.query(syxCompair,function(err,rows,fields){
+    console.log(rows.length > 0)
+    if(rows.length > 0){
+      res.json({
+        status: 300
+      });
+      connection.end();
+      return ;
+    }else{
+      let syx = 'INSERT INTO `fresh` (`fresh_id`, `fresh_item`) VALUES (NULL,' + data + ')';
+      connection.query(syx, function (err, rows, fields) {
+        if (err) throw err;
+        console.log('查询结果为: ', fields);
+        res.json({
+          status: 200
+        });
+      }); //异步，要使用Promise
+      connection.end();
+    }
+  });
 
-})
+});
 app.get("/fresh", (req, res) => {
   let connection = mysql.createConnection(mysqlConfig);
   //查询

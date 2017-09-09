@@ -176,11 +176,11 @@ function turn(face, data) {
 }
 
 function subJoin() {
-	var name = $("input.joinName").val();
-	var phone = $("input.joinPhone").val();
-	var QQ = $("input.joinQQ").val();
-	var college = $("input.joinCollege").val();
-	var depart = $(".joinDepart").val();
+	var name = $("input.joinName").val().trim();
+	var phone = $("input.joinPhone").val().trim();
+	var QQ = $("input.joinQQ").val().trim();
+	var college = $("input.joinCollege").val().trim();
+	var depart = $(".joinDepart").val().trim();
 
 	var msg = '';
 	var numreg = new RegExp("^[0-9]*$");
@@ -208,13 +208,17 @@ function subJoin() {
 			if (data.status == 200) {
 				$("#success").html("报名成功!请等待短信或邮件提醒");
 				$("#success").show();
-				$("#success").hide(1000);
+				setTimeout(function(){$("#success").hide();},3000);
+
+			} else if(data.status == 300){
+				$("#success").html("你已经报名了");
+				$("#success").show();
+				setTimeout(function(){$("#success").hide();},3000);
 
 			} else {
 				$("#success").html(":(失败了");
 				$("#success").show();
-				$("#success").hide(1000);
-
+				setTimeout(function(){$("#success").hide();},3000);
 			}
 		});
 }
