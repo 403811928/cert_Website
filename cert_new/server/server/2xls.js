@@ -2,11 +2,7 @@ var json2xls = require('json2xls');
 var fs = require("fs");
 var mysql = require('mysql');
 const mysqlConfig = {
-    host: '119.29.239.95',
-    user: 'root',
-    password: 'Aini0124.',
-    database: 'cert',
-    port: '3306'
+
   };
 let connection = mysql.createConnection(mysqlConfig);
 //查询
