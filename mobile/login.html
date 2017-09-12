@@ -230,7 +230,6 @@
         var QQ = $("input.joinQQ").val().trim();
         var college = $("input.joinCollege").val().trim();
         var depart = $(".joinDepart").val().trim();
-
         var msg = '';
         var numreg = new RegExp("^[0-9]*$");
         var hanreg = new RegExp('^[\u4e00-\u9fa5]+$');
@@ -254,6 +253,7 @@
         $.post("http://lj661.cn:8000/fresh", 'name=' + name + '&college=' + college + '&QQ=' + QQ + '&phone=' + phone +
             '&depart=' + depart,
             function (data) {
+                $(".subJoin").attr("disabled");
                 console.log(data);
                 console.log(data.status);
                 if (data.status == 200) {
@@ -271,6 +271,7 @@
                     $("#success").show();
                     setTimeout(function(){$("#success").hide();},3000);
                 }
+                $(".subJoin").removeAttr("disabled");
             });
     }
 </script>

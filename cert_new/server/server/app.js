@@ -13,11 +13,7 @@ app.use(cors())
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json()); //解析中间件，并获取前端传来的数据
 const mysqlConfig = {
-  host: '119.29.239.95',
-  user: 'root',
-  password: 'Aini0124.',
-  database: 'cert',
-  port: '3306'
+
 };
 var jwt = require("jwt-simple");
 
@@ -408,7 +404,6 @@ app.patch("/works", (req, res) => {
     let deleteID = req.body.data;
     let connection = mysql.createConnection(mysqlConfig);
     //查询
-
     connection.connect();
     connection.query('DELETE FROM `works` WHERE `works`.`works_id` = \'' + deleteID + '\'', function (err, rows, fields) {
       if (err) throw err;
@@ -464,7 +459,6 @@ app.post("/fresh", (req, res) => {
       connection.end();
     }
   });
-
 });
 app.get("/fresh", (req, res) => {
   let connection = mysql.createConnection(mysqlConfig);

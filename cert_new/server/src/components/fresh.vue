@@ -19,10 +19,10 @@
           <th class="itemBtn">操作</th>
         </tr>
         <tr class="tableLine" v-if="listItem.length == 0">
-          <td colspan="6">无信息</td>
+          <td colspan="7">{{msg}}</td>
         </tr>
-        <tr class="tableLine tableMain" v-for="(item,index) in listItem">
-          <td>{{ index+1 }}</td>
+        <tr class="tableLine tableMain" v-for="(item,index) in pageItem">
+          <td>{{ item.index }}</td>
           <td>
             {{item.name}}
           </td>
@@ -65,22 +65,21 @@ export default {
   name: "itemList",
   data() {
     return {
+      msg:"无信息",
       listItem: [],
       pageCount: "",
       pageItem: [],
       pageIndex: "",
-      pageIndex: "",
-      pageNum: 4,
+      pageNum: 10,
       toast: "",
       toastShow: false,
       postURL: "http://lj661.cn:8000/fresh/",
-
     }
   },
   components: { home, uploadImg },
   methods: {
     page() { //分页功能
-      this.pageCount = Math.ceil(this.listItem.length / 4);
+      this.pageCount = Math.ceil(this.listItem.length /this.pageNum);
     },
     pageLast() { //上一页
       if (this.pageIndex > 1) {
@@ -89,7 +88,6 @@ export default {
         let end = ((this.pageIndex - 1) * this.pageNum);
         this.pageItem = this.listItem.slice(start, end);
         this.pageIndex -= 1;
-        console.log("index" + this.pageIndex, "start" + start, "end" + end, "pageItem" + this.pageItem);
       }
 
     },
@@ -98,7 +96,6 @@ export default {
       let start = this.pageIndex * this.pageNum;
       let end = ((this.pageIndex + 1) * this.pageNum);
       this.pageItem = this.listItem.slice(start, end);
-      console.log("index" + this.pageIndex, "start" + start, "end" + end, "pageItem" + this.pageItem);
     },
     pageNext() {//下一页
       if (this.pageIndex < this.pageCount) {
@@ -106,7 +103,6 @@ export default {
         let end = ((this.pageIndex + 1) * this.pageNum);
         this.pageIndex += 1;
         this.pageItem = this.listItem.slice(start, end);
-        console.log("index" + this.pageIndex, "start" + start, "end" + end, "pageItem" + this.pageItem);
       }
     },
     fix(num) {
@@ -120,15 +116,18 @@ export default {
       }
     },
     del(num) {
-      this.$http.patch(this.postURL, { "data": num, "token": window.localStorage.getItem("token") }).then(res => {
-        if (res.data.status == 200) {
-          this.getInfo()
-          this.showToast("删除");
-        } else if (res.data.status == 404) {
-          this.$router.push({ path: "/" });
-          window.localStorage.removeItem("token");
-        }
-      })
+      let confirm = window.confirm("确定删除吗?");
+      if(confirm){
+        this.$http.patch(this.postURL, { "data": num, "token": window.localStorage.getItem("token") }).then(res => {
+          if (res.data.status == 200) {
+            this.getInfo();
+            this.showToast("删除");
+          } else if (res.data.status == 404) {
+            this.$router.push({ path: "/" });
+            window.localStorage.removeItem("token");
+          }
+        });
+      }
     },
     showToast(value, time = 800) {
       this.toastShow = !this.toastShow;
@@ -137,14 +136,16 @@ export default {
       setTimeout(function () { that.toastShow = !that.toastShow }, time);
     },
     getInfo() {
+      this.msg = "正在获取信息，请稍等";
       this.$http.get(this.postURL, { params: { token: window.localStorage.getItem("token") } }).then(res => {
         if (res.data.status == 404) {
           this.$router.push({ path: "/" });
           window.localStorage.removeItem("token");
         } else if (res.data.status == 200) {
           this.listItem = [];
-          res.data.data.forEach((item) => {
+          res.data.data.forEach((item,index) => {
             this.listItem.push(item);
+            item.index = index + 1;
           }, this);
           this.pageIndex = 1;
           this.pageItem = this.listItem.slice(0, this.pageNum);
